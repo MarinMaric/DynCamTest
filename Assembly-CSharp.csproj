@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scenes\Notes.cs" />
+    <Compile Include="Assets\Scripts\CurveMovement.cs" />
     <Compile Include="Assets\Scripts\DynamicCameraControl.cs" />
     <Compile Include="Assets\Scripts\DynamicCameraEditor.cs" />
     <Compile Include="Assets\Scripts\GroupControl.cs" />
