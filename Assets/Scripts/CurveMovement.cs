@@ -7,7 +7,6 @@ public class CurveMovement : MonoBehaviour
     float count = 0.0f;
     public Transform targetPoint;
     public Transform[] points;
-    float displacementPerpendicular = 5f;
     public float smoothFactor = 5f;
     public GameObject waypointPrefab;
 
@@ -35,22 +34,14 @@ public class CurveMovement : MonoBehaviour
             {
                 Destroy(GameObject.Find("midPoint"));
             }
-            //pastStart = currentStart;
-            //midControlPoint = points[pointA].position + (points[pointB].position - points[pointA].position) / 2 + Vector3.forward * displacementForward;
-            //var midGO = Instantiate(waypointPrefab, midControlPoint, Quaternion.identity);
-            //midGO.name = "midPoint";
 
             pastStart = currentStart;
-            midControlPoint = (points[pointB].position - points[pointA].position) / 2;
-            var midGO = Instantiate(waypointPrefab, midControlPoint, Quaternion.LookRotation(points[pointB].position));
+            midControlPoint = (points[pointA].position + points[pointB].position) / 2;
+            var midGO = Instantiate(waypointPrefab, midControlPoint, Quaternion.identity);
+            midGO.transform.LookAt(points[pointB].position);
             midGO.name = "midPoint";
 
-            int sign;
-            if (points[pointB].position.z < points[pointA].position.z || points[pointB].position.x > points[pointA].position.x)
-                sign = 1;
-            else sign = 1;
-
-            midGO.transform.localPosition += midGO.transform.right * sign * displacementPerpendicular;
+            midGO.transform.localPosition += midGO.transform.right * smoothFactor;
             midControlPoint = midGO.transform.position;
         }
 
