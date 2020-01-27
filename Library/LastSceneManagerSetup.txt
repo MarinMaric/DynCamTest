@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/TargetFirst.unity
+- path: Assets/Scenes/BezierCalculator.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

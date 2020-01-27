@@ -63,6 +63,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scenes\Notes.cs" />
+    <Compile Include="Assets\Scripts\BezierCurveCalculator\Bezier.cs" />
+    <Compile Include="Assets\Scripts\BezierCurveCalculator\BezierCurve.cs" />
+    <Compile Include="Assets\Scripts\BezierCurveCalculator\BezierCurveInspector.cs" />
+    <Compile Include="Assets\Scripts\BezierCurveCalculator\Line.cs" />
+    <Compile Include="Assets\Scripts\BezierCurveCalculator\LineInspector.cs" />
     <Compile Include="Assets\Scripts\CurveMovement.cs" />
     <Compile Include="Assets\Scripts\DynamicCameraControl.cs" />
     <Compile Include="Assets\Scripts\DynamicCameraEditor.cs" />

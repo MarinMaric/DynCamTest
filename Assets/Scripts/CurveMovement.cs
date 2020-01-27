@@ -7,12 +7,13 @@ public class CurveMovement : MonoBehaviour
     float count = 0.0f;
     public Transform targetPoint;
     public Transform[] points;
-    public float smoothFactor = 5f;
+    public float curveFactor = 5f;
     public GameObject waypointPrefab;
 
     int currentStart = 0, currentGoal = 1;
     int pastStart;
     Vector3 midControlPoint;
+    public float speed = 5f;
 
     void Start()
     {
@@ -27,7 +28,6 @@ public class CurveMovement : MonoBehaviour
 
     void LerpPoints(int pointA, int pointB)
     {
-        //I need to set the speed therefore determining it by interpolation is unacceptable. The time for count should be time necesarry to cover the distance with such a speed.
         if (pastStart != currentStart)
         {
             if (currentStart != 0)
@@ -41,16 +41,13 @@ public class CurveMovement : MonoBehaviour
             midGO.transform.LookAt(points[pointB].position);
             midGO.name = "midPoint";
 
-            midGO.transform.localPosition += midGO.transform.right * smoothFactor;
+            midGO.transform.localPosition += midGO.transform.right * curveFactor;
             midControlPoint = midGO.transform.position;
         }
 
         if (count < 1.0f)
         {
             count += 1.0f * Time.deltaTime;
-            Vector3 m1 = Vector3.Lerp(points[pointA].position, midControlPoint, count);
-            Vector3 m2 = Vector3.Lerp(midControlPoint, points[pointB].position, count);
-            transform.position = Vector3.Lerp(m1, m2, count);
         }
         else if (currentGoal < points.Length)
         {
@@ -58,5 +55,13 @@ public class CurveMovement : MonoBehaviour
             currentGoal = currentStart + 1;
             count = 0f;
         }
+
+        if (currentStart != pastStart)
+        {
+            Vector3 m1 = Vector3.MoveTowards(points[pointA].position, midControlPoint, count * speed);
+            Vector3 m2 = Vector3.MoveTowards(midControlPoint, points[pointB].position, count * speed);
+            transform.position = Vector3.MoveTowards(m1, m2, count * speed);
+        }
+
     }
 }

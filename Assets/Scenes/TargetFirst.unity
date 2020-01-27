@@ -136,7 +136,7 @@ PrefabInstance:
     - target: {fileID: 7578198139938616272, guid: fcfce687e04427348b45716374e2b9e0,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 14.04
+      value: 18.42
       objectReference: {fileID: 0}
     - target: {fileID: 7578198139938616272, guid: fcfce687e04427348b45716374e2b9e0,
         type: 3}
@@ -146,7 +146,7 @@ PrefabInstance:
     - target: {fileID: 7578198139938616272, guid: fcfce687e04427348b45716374e2b9e0,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.89
+      value: -0.09
       objectReference: {fileID: 0}
     - target: {fileID: 7578198139938616272, guid: fcfce687e04427348b45716374e2b9e0,
         type: 3}
@@ -1120,8 +1120,9 @@ MonoBehaviour:
   points:
   - {fileID: 559034824}
   - {fileID: 633234527}
-  smoothFactor: 0.7
+  curveFactor: 10
   waypointPrefab: {fileID: 559034820}
+  speed: 5
 --- !u!1 &1095405958
 GameObject:
   m_ObjectHideFlags: 0
