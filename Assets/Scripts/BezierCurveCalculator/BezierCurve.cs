@@ -13,28 +13,19 @@ public class BezierCurve : MonoBehaviour
             new Vector3(1f,0f,0f),
             new Vector3(2f,0f,0f),
             new Vector3(3f,0f,0f),
-            new Vector4(4f,0f,0f)
+            //new Vector4(4f,0f,0f)
         };
     }
 
     public Vector3 GetPoint(float t)
     {
-        return transform.TransformPoint(Bezier.GetPoint(points[0], points[1], points[2], points[3], t));
-    }
-
-    public static Vector3 GetPoint(Vector3 p0, Vector3 p1, Vector3 p2, float t)
-    {
-        t = Mathf.Clamp01(t);
-        float oneMinusT = 1f - t;
-        return
-            oneMinusT * oneMinusT * p0 +
-            2f * oneMinusT * t * p1 +
-            t * t * p2;
+        Vector3 point= transform.TransformPoint(Bezier.GetPoint(points[0], points[1], points[2], /*points[3],*/ t));
+        return point;
     }
 
     public Vector3 GetVelocity(float t)
     {
-        return transform.TransformPoint(Bezier.GetFirstDerivative(points[0], points[1], points[2], points[3], t)) -
+        return transform.TransformPoint(Bezier.GetFirstDerivative(points[0], points[1], points[2], /*points[3],*/ t)) -
             transform.position;
     }
 

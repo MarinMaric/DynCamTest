@@ -62,6 +62,5 @@ public class CurveMovement : MonoBehaviour
             Vector3 m2 = Vector3.MoveTowards(midControlPoint, points[pointB].position, count * speed);
             transform.position = Vector3.MoveTowards(m1, m2, count * speed);
         }
-
     }
 }

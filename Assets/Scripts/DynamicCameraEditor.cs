@@ -34,10 +34,12 @@ public class DynamicCameraEditor : Editor
             childCamera.AddComponent<CinemachineVirtualCamera>();
             childCamera.transform.parent = ((CinemachineStateDrivenCamera)stateDrivenCamera.objectReferenceValue).transform;
             var vcam=childCamera.GetComponent<CinemachineVirtualCamera>();
-            vcam.AddCinemachineComponent<CinemachineTransposer>();
+            //vcam.AddCinemachineComponent<CinemachineTransposer>();
             vcam.AddCinemachineComponent<CinemachineComposer>();
             vcam.m_Lens.FieldOfView = 60;
 
+            childCamera.AddComponent<BezierTravel>();
+            var zoomScript = childCamera.AddComponent<DynCamZoom>();
             AddToCameraList(childCamera);
             Repaint();
         }
@@ -81,10 +83,11 @@ public class DynamicCameraEditor : Editor
         cameraProperties.arraySize++;
         var newProperty = cameraProperties.GetArrayElementAtIndex(cameraProperties.arraySize - 1);
         newProperty.FindPropertyRelative("camGO").objectReferenceValue = ccam;
-        newProperty.FindPropertyRelative("position").vector3Value = Vector3.zero;
-        newProperty.FindPropertyRelative("zoomAmount").floatValue = 0f;
-        newProperty.FindPropertyRelative("zoomSpeed").floatValue = 0f;
-
+        newProperty.FindPropertyRelative("positionOffset").vector3Value = Vector3.zero;
+        newProperty.FindPropertyRelative("zoomMin").floatValue = 0f;
+        newProperty.FindPropertyRelative("zoomMax").floatValue = 60f;
+        newProperty.FindPropertyRelative("zoomSpeedFactor").floatValue = 1f;
+        newProperty.FindPropertyRelative("zoomAmount").floatValue = 60f;
         camerasArray.serializedObject.ApplyModifiedProperties();
     }
 
