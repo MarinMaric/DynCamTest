@@ -37,9 +37,8 @@ public class BezierSplineInspector : Editor
                 Handles.DrawBezier(p0, p3, p1, p2, Color.white, null, 2f);
                 p0 = p3;
             }
-            ShowDirections();
+            //ShowDirections();
         }
-        
     }
 
     private const int stepsPerCurve = 10;
@@ -81,6 +80,7 @@ public class BezierSplineInspector : Editor
                 Undo.RecordObject(spline, "Move Point");
                 EditorUtility.SetDirty(spline);
                 spline.SetControlPoint(index, handleTransform.InverseTransformPoint(point));
+
             }
         }
         return point;
@@ -88,19 +88,26 @@ public class BezierSplineInspector : Editor
 
     public override void OnInspectorGUI()
     {
-        //spline = target as BezierSpline;
-        //if(selectedIndex >=0 && selectedIndex < spline.ControlPointCount)
-        //{
-        //    DrawSelectedPointInspector();
-        //}
+        spline = target as BezierSpline;
+        if (selectedIndex >= 0 && selectedIndex < spline.ControlPointCount)
+        {
+            DrawSelectedPointInspector();
+        }
 
-        //if (GUILayout.Button("Add Curve"))
-        //{
-        //    Undo.RecordObject(spline, "Add Curve");
-        //    spline.AddCurve();
-        //    EditorUtility.SetDirty(spline);
-        //}
-        //serializedObject.ApplyModifiedProperties();
+        if (GUILayout.Button("Add Curve"))
+        {
+            Undo.RecordObject(spline, "Add Curve");
+            spline.AddCurve();
+            EditorUtility.SetDirty(spline);
+        }
+        serializedObject.ApplyModifiedProperties();
+
+        if(GUILayout.Button("Substract Curve"))
+        {
+            Undo.RecordObject(spline, "Substract Curve");
+            spline.SubstractCurve();
+            EditorUtility.SetDirty(spline);
+        }
     }
 
     private void DrawSelectedPointInspector()

@@ -30,7 +30,15 @@ public class DynamicCameraEditor : Editor
             cameraProperties = serializedObject.FindProperty("cameraProperties");
 
             var childCamera = new GameObject();
-            childCamera.name = "CM vcam" + (((CinemachineStateDrivenCamera)stateDrivenCamera.objectReferenceValue).ChildCameras.Length + 1);
+            //childCamera.name = "CM vcam" + (((CinemachineStateDrivenCamera)stateDrivenCamera.objectReferenceValue).ChildCameras.Length + 1);
+            if (DynamicCameraControl.Instance.cameraProperties.Count != 0)
+            {
+                int parsed = int.Parse((DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameras.Count - 1].camGO.name.Substring(
+                    DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameras.Count - 1].camGO.name.Length - 1, 1)));
+                parsed++;
+                childCamera.name = "CM vcam" + parsed;
+            }
+            else childCamera.name = "CM vcam1";
             childCamera.AddComponent<CinemachineVirtualCamera>();
             childCamera.transform.parent = ((CinemachineStateDrivenCamera)stateDrivenCamera.objectReferenceValue).transform;
             var vcam=childCamera.GetComponent<CinemachineVirtualCamera>();
@@ -89,7 +97,9 @@ public class DynamicCameraEditor : Editor
         newProperty.FindPropertyRelative("zoomSpeedFactor").floatValue = 1f;
         newProperty.FindPropertyRelative("zoomAmount").floatValue = 60f;
         newProperty.FindPropertyRelative("buttonAdd").FindPropertyRelative("text").stringValue = "Add Curve";
+        newProperty.FindPropertyRelative("buttonAdd").FindPropertyRelative("index").intValue = cameraProperties.arraySize -1;
         newProperty.FindPropertyRelative("buttonClear").FindPropertyRelative("text").stringValue = "Clear Curve";
+        newProperty.FindPropertyRelative("buttonClear").FindPropertyRelative("index").intValue = cameraProperties.arraySize - 1;
         camerasArray.serializedObject.ApplyModifiedProperties();
     }
 
@@ -102,7 +112,15 @@ public class DynamicCameraEditor : Editor
             var cam = cameraProperties.GetArrayElementAtIndex(i);
 
             if (cam.FindPropertyRelative("delete").boolValue)
+            {
                 namesToDelete.Add(cam.FindPropertyRelative("camGO").objectReferenceValue.name);
+                var pathGO = GameObject.Find(namesToDelete[namesToDelete.Count-1]+ "_Path");
+                if (pathGO != null)
+                    DestroyImmediate(pathGO);
+                var colliderGO = GameObject.Find(namesToDelete[namesToDelete.Count - 1] + "_Collider");
+                if (colliderGO != null)
+                    DestroyImmediate(colliderGO);
+            }
         }
 
         int finalSize = cameraProperties.arraySize-namesToDelete.Count;
@@ -116,6 +134,7 @@ public class DynamicCameraEditor : Editor
                 //is decreased.
                 if (index < lastIndex)
                 {
+                    
                     cameraProperties.DeleteArrayElementAtIndex(index);
                     lastIndex--;
                 }

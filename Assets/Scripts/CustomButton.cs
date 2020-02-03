@@ -8,7 +8,8 @@ using System;
 public class CustomButton : PropertyAttribute
 {
     public string text;
-    public CustomButton(string t) { text = t; }
+    [HideInInspector]public int index;
+    public CustomButton(string t, int i) { text = t; index = i; }
 }
 
 [CustomPropertyDrawer(typeof(CustomButton))]
@@ -23,7 +24,7 @@ public class CustomButtonPropertyDrawer: PropertyDrawer
         {
             if (GUI.Button(position, "Add Curve"))
             {
-                var dynCam = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex];
+                var dynCam = DynamicCameraControl.Instance.cameraProperties[property.FindPropertyRelative("index").intValue];
                 dynCam.AddCurve();
             }
         }
@@ -31,7 +32,7 @@ public class CustomButtonPropertyDrawer: PropertyDrawer
         {
             if (GUI.Button(position, "Clear Curve"))
             {
-                var dynCam = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex];
+                var dynCam = DynamicCameraControl.Instance.cameraProperties[property.FindPropertyRelative("index").intValue];
                 dynCam.ClearCurve();
             }
         }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class BezierSpline : MonoBehaviour
 {
     [SerializeField]
-    private Vector3[] points;
+    public Vector3[] points;
     public int ControlPointCount
     {
         get
@@ -93,6 +93,13 @@ public class BezierSpline : MonoBehaviour
         points[points.Length - 2] = point;
         point.x += 1f;
         points[points.Length - 1] = point;
+    }
+
+    public void SubstractCurve()
+    {
+        if (points.Length > 4)
+            Array.Resize(ref points, points.Length - 3);
+        else Reset();
     }
 
     public void Clear()

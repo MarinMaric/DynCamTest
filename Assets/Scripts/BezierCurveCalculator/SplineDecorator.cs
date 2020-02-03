@@ -13,9 +13,9 @@ public class SplineDecorator : MonoBehaviour
 
     BezierTravel travelScript;
 
-    private void Awake()
+    public void Start()
     {
-        BezierTravel travelScript = GameObject.FindGameObjectWithTag("Player").GetComponent<BezierTravel>();
+        BezierTravel travelScript = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].camGO.GetComponent<BezierTravel>();
 
         if (frequency <= 0 || items == null || items.Length == 0)
         {
@@ -42,7 +42,8 @@ public class SplineDecorator : MonoBehaviour
                     item.transform.LookAt(position + spline.GetDirection(p * stepSize));
                 }
                 item.transform.parent = transform;
-                travelScript.points.Add(item);
+                travelScript.points.Add(item.position);
+                Destroy(item.gameObject);
             }
         }
     }

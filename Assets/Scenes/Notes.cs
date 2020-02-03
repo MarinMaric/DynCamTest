@@ -8,7 +8,7 @@ public class Notes : MonoBehaviour
 
     //Setting a position via transposer offset or Do Nothing with basic transform   <--trivial
 
-    //Make singleton    <--redo
+    //Make singleton    <--done
 
     //Give full control over control points instead of auto-generating  <--done
 
@@ -17,6 +17,10 @@ public class Notes : MonoBehaviour
     //Incorporate splines to DynamicCameraControl   <--done
 
     //Collider trigger
+
+    //Fix buttons
+
+    //Camera moving back??
 }
 
 /*

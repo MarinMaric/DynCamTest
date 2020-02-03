@@ -13,6 +13,7 @@ public class DynamicCameraControl : MonoBehaviour
     public List<GameObject> cameras;
     public List<DynCamera> cameraProperties;
     [HideInInspector] public int activeCameraIndex = 0;
+    [HideInInspector] public GameObject animatedTarget;
 
     private static bool m_ShuttingDown = false;
     private static object m_Lock = new object();
@@ -121,7 +122,7 @@ public class DynamicCameraControl : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
         #region obsolete create curve method
         ////Calculate set paths
@@ -130,9 +131,11 @@ public class DynamicCameraControl : MonoBehaviour
         //    dynCam.CreateCurve();
         //}
         #endregion
-
+        GameObject.Find("PathDecorator").GetComponent<SplineDecorator>().spline = cameraProperties[activeCameraIndex].path;
+        animatedTarget = GameObject.FindGameObjectWithTag("Animated");
     }
 
+    #region obsolete key points
     public GameObject PopulateKeyPoint(Vector3 position) {
         position = transform.TransformPoint(position);
         var itemGO = Instantiate(keyPointPrefab, position, Quaternion.identity);
@@ -144,16 +147,46 @@ public class DynamicCameraControl : MonoBehaviour
         if(p!=null)
             DestroyImmediate(p.gameObject);
     }
+    #endregion
+
+    private void OnDrawGizmos()
+    {
+        if (cameraProperties.Count == 0)
+            return;
+        if (cameraProperties[activeCameraIndex].path != null)
+        {
+            for (int i = 0; i < cameraProperties[activeCameraIndex].path.points.Length; i++)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawSphere(cameraProperties[activeCameraIndex].path.points[i], .1f);
+            }
+            var points = cameraProperties[activeCameraIndex].camGO.GetComponent<BezierTravel>().points;
+            if (points != null)
+            {
+                foreach (Vector3 p in points)
+                {
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawSphere(p, .1f);
+                }
+            }
+        }
+    }
+
 }
 
 [Serializable]
 public class DynCamera
 {
+    [Tooltip("Camera game object")]
     public GameObject camGO;
+    [Tooltip("Collider used for triggering the camera")]
+    public BoxCollider collider;
     [Tooltip("Mark for deletion.")]
     public bool delete = false;
-    public Vector3 positionOffset;
+    [HideInInspector] public Vector3 positionOffset;
     [HideInInspector]public Vector3 originalPosition;
+
+    [Header("Zoom Settings")]
     [Tooltip("The closest the camera can zoom in at the target.")]
     public float zoomMin;
     [Tooltip("The farthest the camera can zoom out from the target.")]
@@ -167,61 +200,69 @@ public class DynCamera
     [Header("Camera Path")]
     [Tooltip("Smaller values will make the path resemble more of a straight line while larger values will create a more significant curve in the path.")]
     public float curveFactor = 5f;
-    public List<Transform> keyPoints;
+    //public List<Transform> keyPoints;
     [HideInInspector]public int countTracker;
-    [HideInInspector]public BezierSpline path;
+    public BezierSpline path;
     [Tooltip("Defines how many points will be sampled from the curve.")]
     public int frequency = 15;
     [HideInInspector]public bool lookForward = true;
     public CustomButton buttonAdd, buttonClear;
 
-    public DynCamera(GameObject cam, Vector3 pos, float zMin = 0f, float zMax = 60f, float zSpeed = 0f)
-    {
-        camGO = cam;
-        if (pos != null)
-            positionOffset = pos;
-        zoomMin = zMin;
-        zoomMax = zMax;
-        zoomSpeedFactor = zSpeed;
+    #region obsolete constructor
+    //public DynCamera(GameObject cam, Vector3 pos, float zMin = 0f, float zMax = 60f, float zSpeed = 0f)
+    //{
+    //    camGO = cam;
+    //    if (pos != null)
+    //        positionOffset = pos;
+    //    zoomMin = zMin;
+    //    zoomMax = zMax;
+    //    zoomSpeedFactor = zSpeed;
 
-        var vcam = cam.GetComponent<CinemachineVirtualCamera>();
-        vcam.m_Lens.FieldOfView = zoomMax;
-        //vcam.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = position;
-        originalPosition = camGO.transform.position;
-        camGO.transform.position += pos;
+    //    var vcam = cam.GetComponent<CinemachineVirtualCamera>();
+    //    vcam.m_Lens.FieldOfView = zoomMax;
+    //    //vcam.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = position;
+    //    originalPosition = camGO.transform.position;
+    //    camGO.transform.position += pos;
 
-        buttonAdd = new CustomButton("Add Curve");
-        buttonClear = new CustomButton("Clear Curve");
-    }
+    //    buttonAdd = new CustomButton("Add Curve", );
+    //    buttonClear = new CustomButton("Clear Curve");
+    //}
+    #endregion
 
     public void AddCurve()
     {
         if (path == null)
         {
-            path = GameObject.FindGameObjectWithTag("Illustrator").GetComponent<BezierSpline>();
+            var pathGO = new GameObject();
+            pathGO.name = camGO.name + "_Path";
+            pathGO.AddComponent<BezierSpline>();
+            path = pathGO.GetComponent<BezierSpline>();
         }
 
         if (path.ControlPointCount == 0)
         {
             path.Reset();
-            for (int i = 0; i < path.ControlPointCount; i++)
-            {
-                var itemGO = DynamicCameraControl.Instance.PopulateKeyPoint(path.GetControlPoint(i));
-                itemGO.name = i.ToString();
-                keyPoints.Add(itemGO.transform);
-            }
+            #region obsolete key points 
+            //for (int i = 0; i < path.ControlPointCount; i++)
+            //{
+            //    var itemGO = DynamicCameraControl.Instance.PopulateKeyPoint(path.GetControlPoint(i));
+            //    itemGO.name = i.ToString();
+            //    keyPoints.Add(itemGO.transform);
+            //}
+            #endregion
         }
         else
         {
             path.AddCurve();
-            for (int i = keyPoints.Count; i < path.ControlPointCount; i++)
-            {
-                var itemGO = DynamicCameraControl.Instance.PopulateKeyPoint(path.GetControlPoint(i));
-                itemGO.name = i.ToString();
-                keyPoints.Add(itemGO.transform);
-            }
+            #region obsolete key points
+            //for (int i = keyPoints.Count; i < path.ControlPointCount; i++)
+            //{
+            //    var itemGO = DynamicCameraControl.Instance.PopulateKeyPoint(path.GetControlPoint(i));
+            //    itemGO.name = i.ToString();
+            //    keyPoints.Add(itemGO.transform);
+            //}
+            #endregion
         }
-        
     }
 
     public void ClearCurve()
@@ -230,17 +271,15 @@ public class DynCamera
             return;
         else {
             path.Clear();
-            foreach(Transform p in keyPoints)
-            {
-                DynamicCameraControl.Instance.DestroyKeyPoint(p);
-            }
-            keyPoints.Clear();
-        } 
+            #region obsolete key points
+            //foreach(Transform p in keyPoints)
+            //{
+            //    DynamicCameraControl.Instance.DestroyKeyPoint(p);
+            //}
+            //keyPoints.Clear();
+            #endregion
+        }
     }
-
-    //control point gets dragged around
-    //button to save is clicked
-    //keypoints reorganized
 
     #region obsolete curve create method
     //public void CreateCurve()
@@ -295,16 +334,16 @@ public class DynCamera
     //}
     #endregion
     #region obsolete calculated control point
-    public Transform CalculateMidpoint(int start, int end)
-    {
-        Vector3 midPoint = (keyPoints[start].position + keyPoints[end].position) / 2;
-        var pointGO = new GameObject();
-        pointGO.transform.position = midPoint;
-        pointGO.name = "midPoint";
-        pointGO.transform.LookAt(keyPoints[1]);
-        pointGO.transform.localPosition += pointGO.transform.right * curveFactor;
+    //public Transform CalculateMidpoint(int start, int end)
+    //{
+    //    Vector3 midPoint = (keyPoints[start].position + keyPoints[end].position) / 2;
+    //    var pointGO = new GameObject();
+    //    pointGO.transform.position = midPoint;
+    //    pointGO.name = "midPoint";
+    //    pointGO.transform.LookAt(keyPoints[1]);
+    //    pointGO.transform.localPosition += pointGO.transform.right * curveFactor;
 
-        return pointGO.transform;
-    }
+    //    return pointGO.transform;
+    //}
     #endregion
 }

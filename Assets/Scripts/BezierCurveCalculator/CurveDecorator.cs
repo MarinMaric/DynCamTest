@@ -38,7 +38,7 @@ public class CurveDecorator : MonoBehaviour
                 itemGO.transform.LookAt(position + curve.GetDirection(f * stepSize));
             }
 
-            travelScript.points.Add(itemGO.transform);
+            travelScript.points.Add(itemGO.transform.position);
         }
     }
 }

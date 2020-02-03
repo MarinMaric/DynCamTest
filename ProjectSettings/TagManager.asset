@@ -8,6 +8,7 @@ TagManager:
   - TargetGroup
   - DynCamManager
   - Illustrator
+  - Animated
   layers:
   - Default
   - TransparentFX
