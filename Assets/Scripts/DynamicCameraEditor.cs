@@ -88,6 +88,8 @@ public class DynamicCameraEditor : Editor
         newProperty.FindPropertyRelative("zoomMax").floatValue = 60f;
         newProperty.FindPropertyRelative("zoomSpeedFactor").floatValue = 1f;
         newProperty.FindPropertyRelative("zoomAmount").floatValue = 60f;
+        newProperty.FindPropertyRelative("buttonAdd").FindPropertyRelative("text").stringValue = "Add Curve";
+        newProperty.FindPropertyRelative("buttonClear").FindPropertyRelative("text").stringValue = "Clear Curve";
         camerasArray.serializedObject.ApplyModifiedProperties();
     }
 

@@ -12,11 +12,60 @@ public class DynamicCameraControl : MonoBehaviour
     public GameObject keyPointPrefab;
     public List<GameObject> cameras;
     public List<DynCamera> cameraProperties;
+    [HideInInspector] public int activeCameraIndex = 0;
+
+    private static bool m_ShuttingDown = false;
+    private static object m_Lock = new object();
+    private static DynamicCameraControl m_Instance;
+    public static DynamicCameraControl Instance
+    {
+        get
+        {
+            if (m_ShuttingDown)
+            {
+                Debug.LogWarning("[Singleton] Instance '" + typeof(DynamicCameraControl) +
+                    "' already destroyed. Returning null.");
+                return null;
+            }
+
+            lock (m_Lock)
+            {
+                if (m_Instance == null)
+                {
+                    // Search for existing instance.
+                    m_Instance = (DynamicCameraControl)FindObjectOfType(typeof(DynamicCameraControl));
+
+                    // Create new instance if one doesn't already exist.
+                    if (m_Instance == null)
+                    {
+                        // Need to create a new GameObject to attach the singleton to.
+                        var singletonObject = new GameObject();
+                        m_Instance = singletonObject.AddComponent<DynamicCameraControl>();
+                        singletonObject.name = typeof(DynamicCameraControl).ToString() + " (Singleton)";
+
+                        // Make instance persistent.
+                        DontDestroyOnLoad(singletonObject);
+                    }
+                }
+
+                return m_Instance;
+            }
+        }
+    }
+    private void OnApplicationQuit()
+    {
+        m_ShuttingDown = true;
+    }
+    private void OnDestroy()
+    {
+        m_ShuttingDown = true;
+    }
 
     private void OnValidate()
     {
         foreach (DynCamera dynCam in cameraProperties)
         {
+            #region transposer obsolete
             //if (dynCam.camGO.transform.position != dynCam.position)
             //{
             //    CinemachineTransposer transposer;
@@ -24,8 +73,9 @@ public class DynamicCameraControl : MonoBehaviour
             //    if (transposer!=null)
             //        transposer.m_FollowOffset = dynCam.position;
             //}
-            
-            if(dynCam.camGO.transform.position != dynCam.originalPosition+dynCam.positionOffset)
+            #endregion
+
+            if (dynCam.camGO.transform.position != dynCam.originalPosition+dynCam.positionOffset)
             {
                 dynCam.camGO.transform.position = dynCam.originalPosition + dynCam.positionOffset;
             }
@@ -40,41 +90,59 @@ public class DynamicCameraControl : MonoBehaviour
                 dynZoomScript.zoomMax = dynCam.zoomMax;
                 dynZoomScript.speedFactor = dynCam.zoomSpeedFactor;
             }
-            else
-            {
-                if (dynCam.keyPoints.Count != dynCam.countTracker)
-                {
-                    for (int i = 0; i < dynCam.keyPoints.Count; i++)
-                    {
-                        if (dynCam.keyPoints[i] == null)
-                        {
-                            var keyPoint = Instantiate(keyPointPrefab, dynCam.camGO.transform.position + Vector3.forward * 5f + Vector3.forward*i, Quaternion.identity).transform;
-                            keyPoint.name = i.ToString();
-                            dynCam.keyPoints[i] = keyPoint;
-                        }
-                    }
-                }
 
-                BezierTravel travelScript = dynCam.camGO.GetComponent<BezierTravel>();
-                if (travelScript.points == null)
-                    travelScript.points = new List<Transform>();
-                travelScript.points.Clear();
+            #region obsolete curve point count validating
+            //else
+            //{
+            //    if (dynCam.keyPoints.Count != dynCam.countTracker)
+            //    {
+            //        for (int i = 0; i < dynCam.keyPoints.Count; i++)
+            //        {
+            //            if (dynCam.keyPoints[i] == null)
+            //            {
+            //                var keyPoint = Instantiate(keyPointPrefab, dynCam.camGO.transform.position + Vector3.forward * 5f + Vector3.forward*i, Quaternion.identity).transform;
+            //                keyPoint.name = i.ToString();
+            //                dynCam.keyPoints[i] = keyPoint;
+            //            }
+            //        }
+            //    }
 
-                foreach (Transform t in dynCam.keyPoints)
-                {
-                    travelScript.points.Add(t);
-                }
-            }
+            //    BezierTravel travelScript = dynCam.camGO.GetComponent<BezierTravel>();
+            //    if (travelScript.points == null)
+            //        travelScript.points = new List<Transform>();
+            //    travelScript.points.Clear();
+
+            //    foreach (Transform t in dynCam.keyPoints)
+            //    {
+            //        travelScript.points.Add(t);
+            //    }
+            //}
+            #endregion
         }
     }
 
     private void Start()
     {
-        //Calculate set paths
-        foreach(DynCamera dynCam in cameraProperties)
-        {
-            dynCam.CreateCurve();
-        }
+        #region obsolete create curve method
+        ////Calculate set paths
+        //foreach(DynCamera dynCam in cameraProperties)
+        //{
+        //    dynCam.CreateCurve();
+        //}
+        #endregion
+
+    }
+
+    public GameObject PopulateKeyPoint(Vector3 position) {
+        position = transform.TransformPoint(position);
+        var itemGO = Instantiate(keyPointPrefab, position, Quaternion.identity);
+        return itemGO;
+    }
+
+    public void DestroyKeyPoint(Transform p)
+    {
+        if(p!=null)
+            DestroyImmediate(p.gameObject);
     }
 }
 
@@ -101,10 +169,11 @@ public class DynCamera
     public float curveFactor = 5f;
     public List<Transform> keyPoints;
     [HideInInspector]public int countTracker;
-    [HideInInspector]public BezierCurve path;
+    [HideInInspector]public BezierSpline path;
     [Tooltip("Defines how many points will be sampled from the curve.")]
     public int frequency = 15;
     [HideInInspector]public bool lookForward = true;
+    public CustomButton buttonAdd, buttonClear;
 
     public DynCamera(GameObject cam, Vector3 pos, float zMin = 0f, float zMax = 60f, float zSpeed = 0f)
     {
@@ -120,59 +189,112 @@ public class DynCamera
         //vcam.GetCinemachineComponent<CinemachineTransposer>().m_FollowOffset = position;
         originalPosition = camGO.transform.position;
         camGO.transform.position += pos;
+
+        buttonAdd = new CustomButton("Add Curve");
+        buttonClear = new CustomButton("Clear Curve");
     }
 
-    public void CreateCurve()
+    public void AddCurve()
     {
-        path = GameObject.FindGameObjectWithTag("Illustrator").GetComponent<BezierCurve>();
-        lookForward = true; 
-        BezierTravel travelScript = camGO.GetComponent<BezierTravel>();
-        travelScript.points.Clear();
-        travelScript.points.Add(keyPoints[0]);
-        travelScript.points.Add(CalculateMidpoint(0, 1));
-        travelScript.points.Add(keyPoints[1]);
-
-        path.points[0] = travelScript.points[0].position;
-        path.points[1] = travelScript.points[1].position;
-        path.points[2] = travelScript.points[2].position;
-
-        path.points[0] = path.transform.InverseTransformPoint(path.points[0]);
-        path.points[1] = path.transform.InverseTransformPoint(path.points[1]);
-        path.points[2] = path.transform.InverseTransformPoint(path.points[2]);
-
-        if (frequency <= 0)
+        if (path == null)
         {
-            return;
+            path = GameObject.FindGameObjectWithTag("Illustrator").GetComponent<BezierSpline>();
         }
-        float stepSize = frequency;
-        if (stepSize == 1)
+
+        if (path.ControlPointCount == 0)
         {
-            stepSize = 1f / stepSize;
+            path.Reset();
+            for (int i = 0; i < path.ControlPointCount; i++)
+            {
+                var itemGO = DynamicCameraControl.Instance.PopulateKeyPoint(path.GetControlPoint(i));
+                itemGO.name = i.ToString();
+                keyPoints.Add(itemGO.transform);
+            }
         }
         else
         {
-            stepSize = 1f / (stepSize - 1);
-        }
-
-        for (int f = 0; f < frequency; f++)
-        {
-            Transform itemGO = new GameObject().transform;
-            Vector3 position = path.GetPoint(f * stepSize);
-            itemGO.gameObject.name = f.ToString();
-            itemGO.transform.localPosition = position;
-            if (lookForward)
+            path.AddCurve();
+            for (int i = keyPoints.Count; i < path.ControlPointCount; i++)
             {
-                if(f<3)
-                {
-                    travelScript.points[f] = itemGO.transform;
-                }
-                itemGO.transform.LookAt(position + path.GetDirection(f * stepSize));
+                var itemGO = DynamicCameraControl.Instance.PopulateKeyPoint(path.GetControlPoint(i));
+                itemGO.name = i.ToString();
+                keyPoints.Add(itemGO.transform);
             }
-            if(f>2)
-                travelScript.points.Add(itemGO.transform);
         }
+        
     }
 
+    public void ClearCurve()
+    {
+        if (path == null)
+            return;
+        else {
+            path.Clear();
+            foreach(Transform p in keyPoints)
+            {
+                DynamicCameraControl.Instance.DestroyKeyPoint(p);
+            }
+            keyPoints.Clear();
+        } 
+    }
+
+    //control point gets dragged around
+    //button to save is clicked
+    //keypoints reorganized
+
+    #region obsolete curve create method
+    //public void CreateCurve()
+    //{
+    //    path = GameObject.FindGameObjectWithTag("Illustrator").GetComponent<BezierSpline>();
+    //    lookForward = true; 
+    //    BezierTravel travelScript = camGO.GetComponent<BezierTravel>();
+    //    travelScript.points.Clear();
+    //    travelScript.points.Add(keyPoints[0]);
+    //    travelScript.points.Add(CalculateMidpoint(0, 1));
+    //    travelScript.points.Add(keyPoints[1]);
+
+    //    path.points[0] = travelScript.points[0].position;
+    //    path.points[1] = travelScript.points[1].position;
+    //    path.points[2] = travelScript.points[2].position;
+
+    //    path.points[0] = path.transform.InverseTransformPoint(path.points[0]);
+    //    path.points[1] = path.transform.InverseTransformPoint(path.points[1]);
+    //    path.points[2] = path.transform.InverseTransformPoint(path.points[2]);
+
+    //    if (frequency <= 0)
+    //    {
+    //        return;
+    //    }
+    //    float stepSize = frequency;
+    //    if (stepSize == 1)
+    //    {
+    //        stepSize = 1f / stepSize;
+    //    }
+    //    else
+    //    {
+    //        stepSize = 1f / (stepSize - 1);
+    //    }
+
+    //    for (int f = 0; f < frequency; f++)
+    //    {
+    //        Transform itemGO = new GameObject().transform;
+    //        Vector3 position = path.GetPoint(f * stepSize);
+    //        itemGO.gameObject.name = f.ToString();
+    //        itemGO.transform.localPosition = position;
+    //        if (lookForward)
+    //        {
+    //            if(f<3)
+    //            {
+    //                travelScript.points[f] = itemGO.transform;
+    //            }
+    //            itemGO.transform.LookAt(position + path.GetDirection(f * stepSize));
+    //        }
+    //        if(f>2)
+    //            travelScript.points.Add(itemGO.transform);
+    //    }
+    //}
+    #endregion
+    #region obsolete calculated control point
     public Transform CalculateMidpoint(int start, int end)
     {
         Vector3 midPoint = (keyPoints[start].position + keyPoints[end].position) / 2;
@@ -184,4 +306,5 @@ public class DynCamera
 
         return pointGO.transform;
     }
+    #endregion
 }

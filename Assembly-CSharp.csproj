@@ -66,11 +66,15 @@
     <Compile Include="Assets\Scripts\BezierCurveCalculator\Bezier.cs" />
     <Compile Include="Assets\Scripts\BezierCurveCalculator\BezierCurve.cs" />
     <Compile Include="Assets\Scripts\BezierCurveCalculator\BezierCurveInspector.cs" />
+    <Compile Include="Assets\Scripts\BezierCurveCalculator\BezierSpline.cs" />
+    <Compile Include="Assets\Scripts\BezierCurveCalculator\BezierSplineInspector.cs" />
     <Compile Include="Assets\Scripts\BezierCurveCalculator\BezierTravel.cs" />
     <Compile Include="Assets\Scripts\BezierCurveCalculator\CurveDecorator.cs" />
     <Compile Include="Assets\Scripts\BezierCurveCalculator\Line.cs" />
     <Compile Include="Assets\Scripts\BezierCurveCalculator\LineInspector.cs" />
+    <Compile Include="Assets\Scripts\BezierCurveCalculator\SplineDecorator.cs" />
     <Compile Include="Assets\Scripts\CurveMovement.cs" />
+    <Compile Include="Assets\Scripts\CustomButton.cs" />
     <Compile Include="Assets\Scripts\DynCamZoom.cs" />
     <Compile Include="Assets\Scripts\DynamicCameraControl.cs" />
     <Compile Include="Assets\Scripts\DynamicCameraEditor.cs" />
