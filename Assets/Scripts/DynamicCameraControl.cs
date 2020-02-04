@@ -7,60 +7,65 @@ using System;
 
 public class DynamicCameraControl : MonoBehaviour
 {
-    [HideInInspector]
     public CinemachineStateDrivenCamera stateDrivenCamera;
     public GameObject keyPointPrefab;
-    public List<GameObject> cameras;
+    public GameObject animatedTarget;
+    [HideInInspector]public List<GameObject> cameras;
     public List<DynCamera> cameraProperties;
-    [HideInInspector] public int activeCameraIndex = 0;
-    [HideInInspector] public GameObject animatedTarget;
+    [HideInInspector]public int activeCameraIndex = 0;
 
-    private static bool m_ShuttingDown = false;
-    private static object m_Lock = new object();
+    [HideInInspector]
+    public static bool changingState = false;
+    [HideInInspector]
+    public static GameObject decorator;
+
+    //private static bool m_ShuttingDown = false;
+    //private static object m_Lock = new object();
     private static DynamicCameraControl m_Instance;
     public static DynamicCameraControl Instance
     {
         get
         {
-            if (m_ShuttingDown)
-            {
-                Debug.LogWarning("[Singleton] Instance '" + typeof(DynamicCameraControl) +
-                    "' already destroyed. Returning null.");
-                return null;
-            }
+            //if (m_ShuttingDown)
+            //{
+            //    Debug.LogWarning("[Singleton] Instance '" + typeof(DynamicCameraControl) +
+            //        "' already destroyed. Returning null.");
+            //    return null;
+            //}
 
-            lock (m_Lock)
-            {
+            //lock (m_Lock)
+            //{
+            //{
                 if (m_Instance == null)
                 {
                     // Search for existing instance.
                     m_Instance = (DynamicCameraControl)FindObjectOfType(typeof(DynamicCameraControl));
 
-                    // Create new instance if one doesn't already exist.
-                    if (m_Instance == null)
-                    {
-                        // Need to create a new GameObject to attach the singleton to.
-                        var singletonObject = new GameObject();
-                        m_Instance = singletonObject.AddComponent<DynamicCameraControl>();
-                        singletonObject.name = typeof(DynamicCameraControl).ToString() + " (Singleton)";
+                // Create new instance if one doesn't already exist.
+                //if (m_Instance == null)
+                //{
+                //    // Need to create a new GameObject to attach the singleton to.
+                //    var singletonObject = new GameObject();
+                //    m_Instance = singletonObject.AddComponent<DynamicCameraControl>();
+                //    singletonObject.name = typeof(DynamicCameraControl).ToString() + " (Singleton)";
 
-                        // Make instance persistent.
-                        DontDestroyOnLoad(singletonObject);
-                    }
-                }
+                //    // Make instance persistent.
+                //    //DontDestroyOnLoad(singletonObject);
+                //}
+                 }
+            return m_Instance;
 
-                return m_Instance;
-            }
+            //}
         }
     }
-    private void OnApplicationQuit()
-    {
-        m_ShuttingDown = true;
-    }
-    private void OnDestroy()
-    {
-        m_ShuttingDown = true;
-    }
+    //private void OnApplicationQuit()
+    //{
+    //    m_ShuttingDown = true;
+    //}
+    //private void OnDestroy()
+    //{
+    //    m_ShuttingDown = true;
+    //}
 
     private void OnValidate()
     {
@@ -133,6 +138,10 @@ public class DynamicCameraControl : MonoBehaviour
         #endregion
         GameObject.Find("PathDecorator").GetComponent<SplineDecorator>().spline = cameraProperties[activeCameraIndex].path;
         animatedTarget = GameObject.FindGameObjectWithTag("Animated");
+
+        //---just checking state driven cam out
+
+        var stateDrivenCam = GetComponent<CinemachineStateDrivenCamera>();
     }
 
     #region obsolete key points
@@ -148,6 +157,32 @@ public class DynamicCameraControl : MonoBehaviour
             DestroyImmediate(p.gameObject);
     }
     #endregion
+
+    private void Update()
+    {
+        if (DynamicCameraControl.changingState)
+        {
+            ChangeActiveCamera();
+        }
+    }
+
+    public void ChangeActiveCamera()
+    {
+        for(int i=0; i < cameraProperties.Count; i++)
+        {
+            if (Camera.main.gameObject.transform.position == cameraProperties[i].camGO.transform.position && activeCameraIndex != i)
+            {
+                cameraProperties[activeCameraIndex].camGO.GetComponent<BezierTravel>().activeCamera = false;
+                activeCameraIndex = i;
+                cameraProperties[i].camGO.GetComponent<BezierTravel>().activeCamera = true;
+                DynamicCameraControl.changingState = false;
+                decorator.GetComponent<SplineDecorator>().Decorate();
+                break;
+            }   
+        }
+
+        Debug.Log(cameraProperties[activeCameraIndex].camGO.name);
+    }
 
     private void OnDrawGizmos()
     {
@@ -171,7 +206,6 @@ public class DynamicCameraControl : MonoBehaviour
             }
         }
     }
-
 }
 
 [Serializable]

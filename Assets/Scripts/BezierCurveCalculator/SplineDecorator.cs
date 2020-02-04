@@ -2,10 +2,9 @@
 
 public class SplineDecorator : MonoBehaviour
 {
-
     public BezierSpline spline;
 
-    public int frequency;
+    [HideInInspector] public int frequency;
 
     public bool lookForward;
 
@@ -15,7 +14,13 @@ public class SplineDecorator : MonoBehaviour
 
     public void Start()
     {
+        Decorate();
+    }
+
+    public void Decorate()
+    {
         BezierTravel travelScript = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].camGO.GetComponent<BezierTravel>();
+        frequency = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].frequency;
 
         if (frequency <= 0 || items == null || items.Length == 0)
         {
@@ -43,8 +48,10 @@ public class SplineDecorator : MonoBehaviour
                 }
                 item.transform.parent = transform;
                 travelScript.points.Add(item.position);
-                Destroy(item.gameObject);
+                //Destroy(item.gameObject);
             }
         }
+
+        DynamicCameraControl.decorator = gameObject;
     }
 }

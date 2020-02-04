@@ -16,7 +16,7 @@ public class Notes : MonoBehaviour
 
     //Incorporate splines to DynamicCameraControl   <--done
 
-    //Collider trigger
+    //Collider trigger  <--done
 
     //Fix buttons
 

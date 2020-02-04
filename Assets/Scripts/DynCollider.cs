@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class DynCollider : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class DynCollider : MonoBehaviour
         {
             var anim = DynamicCameraControl.Instance.animatedTarget.GetComponent<Animator>();
             anim.SetInteger("StateCounter", anim.GetInteger("StateCounter")+1);
+            DynamicCameraControl.changingState = true;
         }
     }
 }

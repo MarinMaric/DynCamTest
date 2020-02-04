@@ -8,6 +8,13 @@ public class BezierTravel : MonoBehaviour
     public float speed = 5f;
     public int counter = 0;
     private bool check=false;
+    public bool activeCamera = false;
+
+    private void Start()
+    {
+        if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].camGO.name == gameObject.name)
+            activeCamera = true;
+    }
 
     private void OnDrawGizmos()
     {
@@ -15,23 +22,39 @@ public class BezierTravel : MonoBehaviour
         {
             if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camGO.name == gameObject.name)
             {
-                DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path = null;
-                var colliderGO = new GameObject();
-                colliderGO.name = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camGO.name + "_Collider";
-                var collider = colliderGO.AddComponent<BoxCollider>();
-                collider.size = new Vector3(10, 10, 5);
-                DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider = collider;
+                if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path !=null && DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path.gameObject.name != gameObject.name + "_Path")
+                {
+                    DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path = null;
+                }
+                if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider == null || (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider != null && DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider.gameObject.name != gameObject.name + "_Collider") || DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider.TryGetComponent<DynCollider>(out DynCollider col)==false)
+                {
+                    if(DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider != null)
+                    {
+                        DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider = null;
+                        DestroyImmediate(DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider);
+                    }
+                    var colliderGO = new GameObject();
+                    colliderGO.name = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camGO.name + "_Collider";
+                    colliderGO.AddComponent<DynCollider>();
+                    var collider = colliderGO.AddComponent<BoxCollider>();
+                    collider.size = new Vector3(5f, 5f, 1.5f);
+                    collider.isTrigger = true;
+                    DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider = collider;
+                }
                 check = true;
             }
         }
-        
     }
 
     private void Update()
     {
-        transform.position = Vector3.MoveTowards(transform.position, points[counter], Time.deltaTime * speed);
-        transform.LookAt(points[counter]);
-        if (Vector3.Distance(transform.position, points[counter]) < 1f && counter != points.Count - 1)
-            counter++;
+        if (activeCamera)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, points[counter], Time.deltaTime * speed);
+            transform.LookAt(points[counter]);
+            if (Vector3.Distance(transform.position, points[counter]) < 1f && counter != points.Count - 1)
+                counter++;
+        }
+
     }
 }
