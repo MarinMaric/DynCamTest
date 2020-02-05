@@ -89,7 +89,6 @@ public class BezierSplineInspector : Editor
 
     public override void OnInspectorGUI()
     {
-        base.DrawDefaultInspector();
         spline = target as BezierSpline;
         if (selectedIndex >= 0 && selectedIndex < spline.ControlPointCount)
         {

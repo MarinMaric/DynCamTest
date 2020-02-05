@@ -21,7 +21,7 @@ public class SplineDecorator : MonoBehaviour
     {
         BezierTravel travelScript = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].camGO.GetComponent<BezierTravel>();
         frequency = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].frequency;
-
+        spline = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].path;
         if (frequency <= 0 || items == null || items.Length == 0)
         {
             return;

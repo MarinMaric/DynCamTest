@@ -199,7 +199,7 @@ public class DynamicCameraControl : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (cameraProperties.Count == 0 || selectedCameraIndex > cameraProperties.Count)
+        if (cameraProperties.Count == 0 || selectedCameraIndex > cameraProperties.Count-1)
             return;
         if (cameraProperties[selectedCameraIndex].path != null)
         {
@@ -240,7 +240,7 @@ public class DynCamera
     public bool delete = false;
     [HideInInspector]public Vector3 positionOffset;
     [HideInInspector]public Vector3 originalPosition;
-    [HideInInspector] public int camID;
+    /*[HideInInspector] */public int camID;
 
     [Header("Zoom Settings")]
     [Tooltip("The closest the camera can zoom in at the target.")]
