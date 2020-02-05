@@ -20,22 +20,22 @@ public class CustomButtonPropertyDrawer: PropertyDrawer
     {
         base.OnGUI(position, property, label);
         
-        if(property.FindPropertyRelative("text").stringValue == "Add Curve")
-        {
-            if (GUI.Button(position, "Add Curve"))
+        //if(property.FindPropertyRelative("text").stringValue == "Add Curve")
+        //{
+            if (GUI.Button(position, "AddCurve"))
             {
-                var dynCam = DynamicCameraControl.Instance.cameraProperties[property.FindPropertyRelative("index").intValue];
-                dynCam.AddCurve();
+                //var dynCam = DynamicCameraControl.Instance.cameraProperties[property.FindPropertyRelative("index").intValue];
+                //dynCam.AddCurve();
+                Debug.Log("Clicked button");
             }
-        }
-        if(property.FindPropertyRelative("text").stringValue == "Clear Curve")
-        {
-            if (GUI.Button(position, "Clear Curve"))
-            {
-                var dynCam = DynamicCameraControl.Instance.cameraProperties[property.FindPropertyRelative("index").intValue];
-                dynCam.ClearCurve();
-            }
-        }
-
+        //}
+        //if(property.FindPropertyRelative("text").stringValue == "Clear Curve")
+        //{
+        //    if (GUI.Button(position, "Clear Curve"))
+        //    {
+        //        var dynCam = DynamicCameraControl.Instance.cameraProperties[property.FindPropertyRelative("index").intValue];
+        //        dynCam.ClearCurve();
+        //    }
+        //}
     }
 }

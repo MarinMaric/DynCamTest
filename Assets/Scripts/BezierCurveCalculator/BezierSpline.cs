@@ -7,6 +7,8 @@ public class BezierSpline : MonoBehaviour
 {
     [SerializeField]
     public Vector3[] points;
+    [HideInInspector]public int splineId;
+
     public int ControlPointCount
     {
         get

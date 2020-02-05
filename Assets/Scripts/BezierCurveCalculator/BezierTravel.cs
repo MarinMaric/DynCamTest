@@ -9,7 +9,6 @@ public class BezierTravel : MonoBehaviour
     public int counter = 0;
     private bool check=false;
     public bool activeCamera = false;
-
     private void Start()
     {
         if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].camGO.name == gameObject.name)
@@ -22,9 +21,15 @@ public class BezierTravel : MonoBehaviour
         {
             if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camGO.name == gameObject.name)
             {
-                if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path !=null && DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path.gameObject.name != gameObject.name + "_Path")
+                if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path == null || (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path !=null && DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path.gameObject.name != gameObject.name + "_Path"))
                 {
-                    DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path = null;
+                    if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path != null)
+                        DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path = null;
+                    var pathGO = new GameObject();
+                    pathGO.name = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camGO.name + "_Path";
+                    var splineScript = pathGO.AddComponent<BezierSpline>();
+                    splineScript.splineId = DynamicCameraControl.Instance.GetDynCamByGO(gameObject).camID;
+                    DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path = pathGO.GetComponent<BezierSpline>();
                 }
                 if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider == null || (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider != null && DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider.gameObject.name != gameObject.name + "_Collider") || DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider.TryGetComponent<DynCollider>(out DynCollider col)==false)
                 {

@@ -48,10 +48,9 @@ public class SplineDecorator : MonoBehaviour
                 }
                 item.transform.parent = transform;
                 travelScript.points.Add(item.position);
-                //Destroy(item.gameObject);
+                Destroy(item.gameObject);
             }
         }
 
-        DynamicCameraControl.decorator = gameObject;
     }
 }

@@ -10,15 +10,16 @@ public class DynamicCameraControl : MonoBehaviour
     public CinemachineStateDrivenCamera stateDrivenCamera;
     public GameObject keyPointPrefab;
     public GameObject animatedTarget;
+    public GameObject decorator;
     [HideInInspector]public List<GameObject> cameras;
     public List<DynCamera> cameraProperties;
     [HideInInspector]public int activeCameraIndex = 0;
+    [HideInInspector]public int selectedCameraIndex = int.MaxValue;
 
     [HideInInspector]
     public static bool changingState = false;
-    [HideInInspector]
-    public static GameObject decorator;
-
+    //[HideInInspector]
+    [HideInInspector] public static int idGenerator = 0;
     //private static bool m_ShuttingDown = false;
     //private static object m_Lock = new object();
     private static DynamicCameraControl m_Instance;
@@ -81,10 +82,10 @@ public class DynamicCameraControl : MonoBehaviour
             //}
             #endregion
 
-            if (dynCam.camGO.transform.position != dynCam.originalPosition+dynCam.positionOffset)
-            {
-                dynCam.camGO.transform.position = dynCam.originalPosition + dynCam.positionOffset;
-            }
+            //if (dynCam.camGO.transform.position != dynCam.originalPosition+dynCam.positionOffset)
+            //{
+            //    dynCam.camGO.transform.position = dynCam.originalPosition + dynCam.positionOffset;
+            //}
             if (dynCam.camGO.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView != dynCam.zoomAmount)
             {
                 dynCam.camGO.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = dynCam.zoomAmount;
@@ -184,24 +185,43 @@ public class DynamicCameraControl : MonoBehaviour
         Debug.Log(cameraProperties[activeCameraIndex].camGO.name);
     }
 
+    public DynCamera GetDynCamByGO(GameObject go) {
+        foreach(DynCamera dynCam in cameraProperties)
+        {
+            if (dynCam.camGO.name == go.name)
+            {
+                return dynCam;
+            }
+        }
+
+        return null;
+    }
+
     private void OnDrawGizmos()
     {
-        if (cameraProperties.Count == 0)
+        if (cameraProperties.Count == 0 || selectedCameraIndex > cameraProperties.Count)
             return;
-        if (cameraProperties[activeCameraIndex].path != null)
+        if (cameraProperties[selectedCameraIndex].path != null)
         {
-            for (int i = 0; i < cameraProperties[activeCameraIndex].path.points.Length; i++)
+            int counter = 0;
+            for (int i = 0; i < cameraProperties[selectedCameraIndex].path.points.Length; i++)
             {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawSphere(cameraProperties[activeCameraIndex].path.points[i], .1f);
+                counter++;
+                if (i == 0 || counter % 4==0)
+                    Gizmos.color = Color.red;
+                else
+                    Gizmos.color = Color.white;
+                Gizmos.DrawSphere(cameraProperties[selectedCameraIndex].path.transform.TransformPoint(cameraProperties[selectedCameraIndex].path.points[i]), .1f);
+                if (counter % 4 == 0)
+                    counter++;
             }
-            var points = cameraProperties[activeCameraIndex].camGO.GetComponent<BezierTravel>().points;
+            var points = cameraProperties[selectedCameraIndex].camGO.GetComponent<BezierTravel>().points;
             if (points != null)
             {
                 foreach (Vector3 p in points)
                 {
                     Gizmos.color = Color.cyan;
-                    Gizmos.DrawSphere(p, .1f);
+                    Gizmos.DrawSphere(transform.TransformPoint(p), .1f);
                 }
             }
         }
@@ -211,14 +231,16 @@ public class DynamicCameraControl : MonoBehaviour
 [Serializable]
 public class DynCamera
 {
+    [Header("General Settings")]
     [Tooltip("Camera game object")]
     public GameObject camGO;
     [Tooltip("Collider used for triggering the camera")]
     public BoxCollider collider;
     [Tooltip("Mark for deletion.")]
     public bool delete = false;
-    [HideInInspector] public Vector3 positionOffset;
+    [HideInInspector]public Vector3 positionOffset;
     [HideInInspector]public Vector3 originalPosition;
+    [HideInInspector] public int camID;
 
     [Header("Zoom Settings")]
     [Tooltip("The closest the camera can zoom in at the target.")]
@@ -231,16 +253,16 @@ public class DynCamera
     [Range(1, 1000)]
     public float zoomSpeedFactor;
     
-    [Header("Camera Path")]
-    [Tooltip("Smaller values will make the path resemble more of a straight line while larger values will create a more significant curve in the path.")]
-    public float curveFactor = 5f;
+    //[Tooltip("Smaller values will make the path resemble more of a straight line while larger values will create a more significant curve in the path.")]
+    //public float curveFactor = 5f;
     //public List<Transform> keyPoints;
     [HideInInspector]public int countTracker;
+    [Header("Camera Path")]
     public BezierSpline path;
-    [Tooltip("Defines how many points will be sampled from the curve.")]
+    [Tooltip("Defines how many points from the curve will be sampled by the waypoint system.")]
     public int frequency = 15;
     [HideInInspector]public bool lookForward = true;
-    public CustomButton buttonAdd, buttonClear;
+    //public CustomButton buttonAdd, buttonClear;
 
     #region obsolete constructor
     //public DynCamera(GameObject cam, Vector3 pos, float zMin = 0f, float zMax = 60f, float zSpeed = 0f)

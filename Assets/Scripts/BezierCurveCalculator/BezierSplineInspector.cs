@@ -68,6 +68,7 @@ public class BezierSplineInspector : Editor
         Handles.color = Color.white;
         if (Handles.Button(point, handleRotation, size * handleSize, size * pickSize, Handles.DotCap))
         {
+            DynamicCameraControl.Instance.selectedCameraIndex = spline.splineId;
             selectedIndex = index;
             Repaint();
         }
@@ -88,6 +89,7 @@ public class BezierSplineInspector : Editor
 
     public override void OnInspectorGUI()
     {
+        base.DrawDefaultInspector();
         spline = target as BezierSpline;
         if (selectedIndex >= 0 && selectedIndex < spline.ControlPointCount)
         {

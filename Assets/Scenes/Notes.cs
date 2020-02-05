@@ -18,9 +18,13 @@ public class Notes : MonoBehaviour
 
     //Collider trigger  <--done
 
-    //Fix buttons
+    //Fix buttons   <-- replaced with basic path 
 
-    //Camera moving back??
+    //Camera moving back??  <-- done
+
+    //Gizmos for selected path  <-- done
+
+    //Gizmos move with path object (not just handles)   <--done
 }
 
 /*
