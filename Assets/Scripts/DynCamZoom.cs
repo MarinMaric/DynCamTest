@@ -12,7 +12,7 @@ public class DynCamZoom : MonoBehaviour
     [HideInInspector]public float speedFactor;
 
     [HideInInspector]public float timeStartedLerping, lerpTime;
-    bool shouldZoom = true;
+    public bool shouldZoom = true;
 
     private void Start()
     {

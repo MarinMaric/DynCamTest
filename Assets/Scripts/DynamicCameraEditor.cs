@@ -97,12 +97,15 @@ public class DynamicCameraEditor : Editor
         newProperty.FindPropertyRelative("zoomSpeedFactor").floatValue = 1f;
         newProperty.FindPropertyRelative("zoomAmount").floatValue = 60f;
         newProperty.FindPropertyRelative("frequency").intValue = 15;
+        if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camID > DynamicCameraControl.idGenerator)
+            DynamicCameraControl.idGenerator = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camID + 1;
         newProperty.FindPropertyRelative("camID").intValue = DynamicCameraControl.idGenerator;
-        DynamicCameraControl.idGenerator++;
+        #region buttons obsolete
         //newProperty.FindPropertyRelative("buttonAdd").FindPropertyRelative("text").stringValue = "Add Curve";
         //newProperty.FindPropertyRelative("buttonAdd").FindPropertyRelative("index").intValue = cameraProperties.arraySize -1;
         //newProperty.FindPropertyRelative("buttonClear").FindPropertyRelative("text").stringValue = "Clear Curve";
-        //newProperty.FindPropertyRelative("buttonClear").FindPropertyRelative("index").intValue = cameraProperties.arraySize - 1;
+        //newProperty.FindPropertyRelative("buttonClear").FindPropertyRelative("index").intValue = cameraProperties.arraySize - 1; 
+        #endregion
         camerasArray.serializedObject.ApplyModifiedProperties();
     }
 
