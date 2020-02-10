@@ -104,6 +104,11 @@ public class DynamicCameraControl : MonoBehaviour
 
                 dynZoomScript.shouldZoom = true;
             }
+            if(dynCam.zoomNew != dynZoomScript.zoomNew)
+            {
+                dynZoomScript.zoomNew = dynCam.zoomNew;
+                dynZoomScript.shouldZoom = true;
+            }
 
             #region obsolete curve point count validating
             //else
@@ -249,18 +254,19 @@ public class DynCamera
     [HideInInspector]public Vector3 originalPosition;
     /*[HideInInspector] */public int camID;
     
-    [Header("Zoom Settings")]
     [Tooltip("The closest the camera can zoom in at the target.")]
-    public float zoomMin;
+    [HideInInspector] public float zoomMin;
     [Tooltip("The farthest the camera can zoom out from the target.")]
-    public float zoomMax;
+    [HideInInspector] public float zoomMax;
+    [Header("Zoom Settings")]
     [Tooltip("Current value for the camera zoom to adjust to. Must be between zoomMin and zoomMax.")]
     public float zoomAmount;
+    public float zoomNew;
     [Tooltip("The smaller the value the faster the zoom.")]
     [Range(1, 1000)]
     public float zoomSpeedFactor;
     [Tooltip("If true, camera field of view will be adjusted to zoomMin. If false, camera field of view will be adjusted to zoomMax.")]
-    public bool zoomIn = false, zoomOut = false;
+    [HideInInspector] public bool zoomIn = false, zoomOut = false;
     
     //[Tooltip("Smaller values will make the path resemble more of a straight line while larger values will create a more significant curve in the path.")]
     //public float curveFactor = 5f;

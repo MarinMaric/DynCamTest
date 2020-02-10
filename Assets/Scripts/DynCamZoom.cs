@@ -13,36 +13,49 @@ public class DynCamZoom : MonoBehaviour
 
     [HideInInspector]public float timeStartedLerping, lerpTime;
     public bool shouldZoom = true;
+    bool zoom = false;
+    public float zoomNew = 50f;
+
+    float previousValueZoom;
+    int counter = 1;
 
     private void Start()
     {
         vcam = GetComponent<CinemachineVirtualCamera>();
+        previousValueZoom = zoomNew;
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            shouldZoom = true;
+            counter++;
+        }
+
         if (shouldZoom)
         {
             timeStartedLerping = Time.time;
             shouldZoom = false;
-        }
-        if (zoomIn) //zooming in means decreasing field of view
-        {
-            LerpZoom(ref zoomIn, zoomMin);
 
+            if (counter % 2 == 0)
+                zoomNew = zoomMin;
+            else zoomNew = zoomMax;
+            zoom = true;
         }
-        else if(zoomOut) //zooming out means increasing field of view
-        {
-            LerpZoom(ref zoomOut, zoomMax);
-        }
+
+        if (zoom)
+            LerpZoom(zoomNew);
     }
 
-    void LerpZoom(ref bool zoomMode, float targetZoom)
+    void LerpZoom(float targetZoom)
     {
         float timeSinceStarted = Time.time - timeStartedLerping;
         float percentageComplete = timeSinceStarted / speedFactor;
         vcam.m_Lens.FieldOfView = Mathf.Lerp(vcam.m_Lens.FieldOfView, targetZoom, percentageComplete);
         if (percentageComplete >= 1)
-            zoomIn = false;
+        {
+            zoom = false;
+        }
     }
 }
