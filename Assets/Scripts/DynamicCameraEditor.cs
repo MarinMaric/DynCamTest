@@ -48,7 +48,12 @@ public class DynamicCameraEditor : Editor
 
             childCamera.AddComponent<BezierTravel>();
             var zoomScript = childCamera.AddComponent<DynCamZoom>();
-            AddToCameraList(childCamera);
+
+            var collidersParent = new GameObject();
+            collidersParent.name = childCamera.name + "_SpeedColliders";
+            collidersParent.transform.parent = DynamicCameraControl.Instance.transform;
+
+            AddToCameraList(childCamera, collidersParent);
             Repaint();
         }
 
@@ -67,7 +72,7 @@ public class DynamicCameraEditor : Editor
         }
     }
 
-    public void AddToCameraList(GameObject ccam)
+    public void AddToCameraList(GameObject ccam, GameObject collidersParent)
     {
         camerasArray.Next(true); //generic field
         camerasArray.Next(true); //length
@@ -92,13 +97,16 @@ public class DynamicCameraEditor : Editor
         var newProperty = cameraProperties.GetArrayElementAtIndex(cameraProperties.arraySize - 1);
         newProperty.FindPropertyRelative("camGO").objectReferenceValue = ccam;
         newProperty.FindPropertyRelative("positionOffset").vector3Value = Vector3.zero;
-        newProperty.FindPropertyRelative("zoomMin").floatValue = 0f;
+        newProperty.FindPropertyRelative("zoomMin").floatValue = 40f;
         newProperty.FindPropertyRelative("zoomMax").floatValue = 60f;
         newProperty.FindPropertyRelative("zoomSpeedFactor").floatValue = 1f;
         newProperty.FindPropertyRelative("zoomAmount").floatValue = 60f;
         newProperty.FindPropertyRelative("frequency").intValue = 15;
-        if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camID > DynamicCameraControl.idGenerator)
-            DynamicCameraControl.idGenerator = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camID + 1;
+        newProperty.FindPropertyRelative("speedCollidersParent").objectReferenceValue = collidersParent.transform;
+        if (DynamicCameraControl.Instance.cameraProperties.Count > 0) {
+            //if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camID > DynamicCameraControl.idGenerator)
+                DynamicCameraControl.idGenerator = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camID + 1;
+        }
         newProperty.FindPropertyRelative("camID").intValue = DynamicCameraControl.idGenerator;
         #region buttons obsolete
         //newProperty.FindPropertyRelative("buttonAdd").FindPropertyRelative("text").stringValue = "Add Curve";
@@ -120,12 +128,26 @@ public class DynamicCameraEditor : Editor
             if (cam.FindPropertyRelative("delete").boolValue)
             {
                 namesToDelete.Add(cam.FindPropertyRelative("camGO").objectReferenceValue.name);
-                var pathGO = GameObject.Find(namesToDelete[namesToDelete.Count-1]+ "_Path");
+                var pathGO = GameObject.Find(namesToDelete[namesToDelete.Count - 1] + "_Path");
                 if (pathGO != null)
                     DestroyImmediate(pathGO);
-                var colliderGO = GameObject.Find(namesToDelete[namesToDelete.Count - 1] + "_Collider");
+                var colliderGO = GameObject.Find(namesToDelete[namesToDelete.Count - 1] + "_ChangeCollider");
                 if (colliderGO != null)
                     DestroyImmediate(colliderGO);
+                var speedCollidersParent = GameObject.Find(namesToDelete[namesToDelete.Count - 1] + "_SpeedColliders");
+                if (speedCollidersParent != null)
+                    DestroyImmediate(speedCollidersParent);
+                //foreach (DynCamera dynCam in DynamicCameraControl.Instance.cameraProperties)
+                //{
+                //    if (dynCam.camID == cam.FindPropertyRelative("camID").intValue)
+                //    {
+                //        foreach(BoxCollider speedCol in dynCam.speedColliders)
+                //        {
+                //            if(speedCol!=null)
+                //                DestroyImmediate(speedCol.gameObject);
+                //        }
+                //    }
+                //}
             }
         }
 
@@ -140,7 +162,6 @@ public class DynamicCameraEditor : Editor
                 //is decreased.
                 if (index < lastIndex)
                 {
-                    
                     cameraProperties.DeleteArrayElementAtIndex(index);
                     lastIndex--;
                 }

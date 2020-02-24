@@ -26,25 +26,33 @@ public class BezierTravel : MonoBehaviour
                     if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path != null)
                         DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path = null;
                     var pathGO = new GameObject();
+                    pathGO.transform.parent = DynamicCameraControl.Instance.stateDrivenCamera.transform;
                     pathGO.name = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camGO.name + "_Path";
                     var splineScript = pathGO.AddComponent<BezierSpline>();
                     splineScript.splineId = DynamicCameraControl.Instance.GetDynCamByGO(gameObject).camID;
                     DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].path = pathGO.GetComponent<BezierSpline>();
                 }
-                if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider == null || (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider != null && DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider.gameObject.name != gameObject.name + "_Collider") || DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider.TryGetComponent<DynCollider>(out DynCollider col) == false)
+                if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].changeCollider == null || (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].changeCollider != null && DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].changeCollider.gameObject.name != gameObject.name + "_Collider") || DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].changeCollider.TryGetComponent<ChangeStateCollider>(out ChangeStateCollider col) == false)
                 {
-                    if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider != null)
+                    if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].changeCollider != null)
                     {
-                        DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider = null;
-                        DestroyImmediate(DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider);
+                        DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].changeCollider = null;
+                        DestroyImmediate(DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].changeCollider);
                     }
                     var colliderGO = new GameObject();
-                    colliderGO.name = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camGO.name + "_Collider";
-                    colliderGO.AddComponent<DynCollider>();
+                    colliderGO.transform.parent = DynamicCameraControl.Instance.stateDrivenCamera.transform;
+                    colliderGO.name = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camGO.name + "_ChangeCollider";
+                    colliderGO.AddComponent<ChangeStateCollider>();
                     var collider = colliderGO.AddComponent<BoxCollider>();
                     collider.size = new Vector3(5f, 5f, 1.5f);
                     collider.isTrigger = true;
-                    DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].collider = collider;
+                    DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].changeCollider = collider;
+                }
+                if (DynamicCameraControl.Instance.GetDynCamByGO(gameObject).speedColliders.Count != 0)
+                {
+                    var dyn = DynamicCameraControl.Instance.GetDynCamByGO(gameObject);
+                    dyn.speedColliders.Clear();
+                    dyn.speedCollidersCount = 0;
                 }
                 check = true;
             }
@@ -60,6 +68,5 @@ public class BezierTravel : MonoBehaviour
             if (Vector3.Distance(transform.position, points[counter]) < 1f && counter != points.Count - 1)
                 counter++;
         }
-
     }
 }

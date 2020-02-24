@@ -22,9 +22,17 @@ public class Notes : MonoBehaviour
 
     //Camera moving back??  <-- done
 
-    //Gizmos for selected path  <-- done
+    //Gizmos for selected path  <--  NOT DONE
 
     //Gizmos move with path object (not just handles)   <--done
+
+    //Hijerarhija   <--done
+
+    //Mjenjanje brzine colliderima  <--done
+
+    //Vise collidera    <--done
+
+    //Stop relying on draw gizmos for inspector setting
 }
 
 /*

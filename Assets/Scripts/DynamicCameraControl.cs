@@ -18,7 +18,6 @@ public class DynamicCameraControl : MonoBehaviour
 
     [HideInInspector]
     public static bool changingState = false;
-    //[HideInInspector]
     [HideInInspector] public static int idGenerator = 0;
     //private static bool m_ShuttingDown = false;
     //private static object m_Lock = new object();
@@ -67,6 +66,9 @@ public class DynamicCameraControl : MonoBehaviour
     //{
     //    m_ShuttingDown = true;
     //}
+    [HideInInspector] public bool cleanUpColliders=false;
+    [HideInInspector] public static int cleanUpID;
+    [HideInInspector] public static int cleanedUpCounter = 0;
 
     private void OnValidate()
     {
@@ -108,6 +110,40 @@ public class DynamicCameraControl : MonoBehaviour
             {
                 dynZoomScript.zoomNew = dynCam.zoomNew;
                 dynZoomScript.shouldZoom = true;
+            }
+            if(dynCam.speedColliders.Count != dynCam.speedCollidersCount)
+            {
+                for(int i=0;i<dynCam.speedColliders.Count;i++)
+                {
+                    if (dynCam.speedColliders[i] == null || dynCam.speedColliders[i].GetComponent<SpeedCollider>().colliderID !=dynCam.camID ||dynCam.speedColliders[i].gameObject.name!= dynCam.camGO.name + "_SpeedCollider" + i)
+                    {
+                        if (i < dynCam.speedCollidersCount)
+                        {
+                            dynCam.speedColliders.RemoveAt(i);
+                        }
+                        else
+                        {
+                            var speedCol = new GameObject();
+                            speedCol.transform.parent = dynCam.speedCollidersParent;
+                            speedCol.AddComponent<BoxCollider>();
+                            speedCol.name = dynCam.camGO.name + "_SpeedCollider" + i;
+                            var colScript = speedCol.AddComponent<SpeedCollider>();
+                            colScript.colliderID = dynCam.camID;
+                            dynCam.speedColliders[i] = speedCol.GetComponent<BoxCollider>();
+                            dynCam.speedColliders[i].isTrigger = true;
+                        }
+                    }
+                }
+                
+                if (dynCam.speedColliders.Count < dynCam.speedCollidersCount)
+                {
+                    cleanUpID = dynCam.camID;
+                    cleanUpColliders = true;
+                }
+                else
+                {
+                    dynCam.speedCollidersCount = dynCam.speedColliders.Count;
+                }
             }
 
             #region obsolete curve point count validating
@@ -247,21 +283,25 @@ public class DynCamera
     [Tooltip("Camera game object")]
     public GameObject camGO;
     [Tooltip("Collider used for triggering the camera")]
-    public BoxCollider collider;
+    public BoxCollider changeCollider;
+    public List<BoxCollider> speedColliders;
+    [HideInInspector] public Transform speedCollidersParent;
+    [HideInInspector] public int speedCollidersCount = 0;
     [Tooltip("Mark for deletion.")]
     public bool delete = false;
     [HideInInspector]public Vector3 positionOffset;
     [HideInInspector]public Vector3 originalPosition;
     /*[HideInInspector] */public int camID;
-    
-    [Tooltip("The closest the camera can zoom in at the target.")]
-    [HideInInspector] public float zoomMin;
-    [Tooltip("The farthest the camera can zoom out from the target.")]
-    [HideInInspector] public float zoomMax;
+
     [Header("Zoom Settings")]
+    [Tooltip("The closest the camera can zoom in at the target.")]
+    /*[HideInInspector]*/ public float zoomMin;
+    [Tooltip("The farthest the camera can zoom out from the target.")]
+    /*[HideInInspector] */public float zoomMax;
+    
     [Tooltip("Current value for the camera zoom to adjust to. Must be between zoomMin and zoomMax.")]
-    public float zoomAmount;
-    public float zoomNew;
+    /*[HideInInspector]*/ public float zoomAmount;
+    [HideInInspector] public float zoomNew;
     [Tooltip("The smaller the value the faster the zoom.")]
     [Range(1, 1000)]
     public float zoomSpeedFactor;
@@ -418,3 +458,4 @@ public class DynCamera
     //}
     #endregion
 }
+
