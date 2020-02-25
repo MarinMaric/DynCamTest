@@ -28,7 +28,7 @@ public class DynamicCameraEditor : Editor
             }
             camerasArray = serializedObject.FindProperty("cameras");
             cameraProperties = serializedObject.FindProperty("cameraProperties");
-
+            var cameraParent = new GameObject();
             var childCamera = new GameObject();
             //childCamera.name = "CM vcam" + (((CinemachineStateDrivenCamera)stateDrivenCamera.objectReferenceValue).ChildCameras.Length + 1);
             if (DynamicCameraControl.Instance.cameraProperties.Count != 0)
@@ -37,8 +37,13 @@ public class DynamicCameraEditor : Editor
                     DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameras.Count - 1].camGO.name.Length - 1, 1)));
                 parsed++;
                 childCamera.name = "CM vcam" + parsed;
+                cameraParent.name = "Camera Auxiliaries " + parsed;
             }
-            else childCamera.name = "CM vcam1";
+            else
+            {
+                childCamera.name = "CM vcam1";
+                cameraParent.name = "Camera Auxiliaries 1";
+            }
             childCamera.AddComponent<CinemachineVirtualCamera>();
             childCamera.transform.parent = ((CinemachineStateDrivenCamera)stateDrivenCamera.objectReferenceValue).transform;
             var vcam=childCamera.GetComponent<CinemachineVirtualCamera>();
@@ -51,9 +56,8 @@ public class DynamicCameraEditor : Editor
 
             var collidersParent = new GameObject();
             collidersParent.name = childCamera.name + "_SpeedColliders";
-            collidersParent.transform.parent = DynamicCameraControl.Instance.transform;
 
-            AddToCameraList(childCamera, collidersParent);
+            AddToCameraList(childCamera, collidersParent, cameraParent);
             Repaint();
         }
 
@@ -72,7 +76,7 @@ public class DynamicCameraEditor : Editor
         }
     }
 
-    public void AddToCameraList(GameObject ccam, GameObject collidersParent)
+    public void AddToCameraList(GameObject ccam, GameObject collidersParent, GameObject cameraParent)
     {
         camerasArray.Next(true); //generic field
         camerasArray.Next(true); //length
@@ -103,6 +107,10 @@ public class DynamicCameraEditor : Editor
         newProperty.FindPropertyRelative("zoomAmount").floatValue = 60f;
         newProperty.FindPropertyRelative("frequency").intValue = 15;
         newProperty.FindPropertyRelative("speedCollidersParent").objectReferenceValue = collidersParent.transform;
+        newProperty.FindPropertyRelative("cameraParent").objectReferenceValue = cameraParent.transform;
+        ccam.transform.parent = DynamicCameraControl.Instance.transform;
+        collidersParent.transform.parent = cameraParent.transform;
+        cameraParent.transform.parent = DynamicCameraControl.Instance.transform;
         if (DynamicCameraControl.Instance.cameraProperties.Count > 0) {
             //if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camID > DynamicCameraControl.idGenerator)
                 DynamicCameraControl.idGenerator = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.cameraProperties.Count - 1].camID + 1;
@@ -162,12 +170,16 @@ public class DynamicCameraEditor : Editor
                 //is decreased.
                 if (index < lastIndex)
                 {
+                    var parent = DynamicCameraControl.Instance.GetDynCamByID(cameraProperties.GetArrayElementAtIndex(index).FindPropertyRelative("camID").intValue).cameraParent;
+                    DestroyImmediate(parent.gameObject);
                     cameraProperties.DeleteArrayElementAtIndex(index);
                     lastIndex--;
                 }
                 //if the index is last then just delete and stop
                 else
                 {
+                    var parent = DynamicCameraControl.Instance.GetDynCamByID(cameraProperties.GetArrayElementAtIndex(index).FindPropertyRelative("camID").intValue).cameraParent;
+                    DestroyImmediate(parent.gameObject);
                     cameraProperties.DeleteArrayElementAtIndex(index);
                     lastIndex--;
                     break;
@@ -179,9 +191,9 @@ public class DynamicCameraEditor : Editor
             }
         }
 
-        foreach(string n in namesToDelete)
+        foreach (string n in namesToDelete)
         {
-            for(int i=0; i < camerasArray.arraySize; i++)
+            for (int i = 0; i < camerasArray.arraySize; i++)
             {
                 var cam = camerasArray.GetArrayElementAtIndex(i).objectReferenceValue;
                 if (cam != null)

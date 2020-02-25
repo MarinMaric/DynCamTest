@@ -11,6 +11,7 @@ public class DynamicCameraControl : MonoBehaviour
     public GameObject keyPointPrefab;
     public GameObject animatedTarget;
     public GameObject decorator;
+    public static int idGenerator = 0;
     [HideInInspector]public List<GameObject> cameras;
     public List<DynCamera> cameraProperties;
     [HideInInspector]public int activeCameraIndex = 0;
@@ -18,7 +19,6 @@ public class DynamicCameraControl : MonoBehaviour
 
     [HideInInspector]
     public static bool changingState = false;
-    [HideInInspector] public static int idGenerator = 0;
     //private static bool m_ShuttingDown = false;
     //private static object m_Lock = new object();
     private static DynamicCameraControl m_Instance;
@@ -129,6 +129,7 @@ public class DynamicCameraControl : MonoBehaviour
                             speedCol.name = dynCam.camGO.name + "_SpeedCollider" + i;
                             var colScript = speedCol.AddComponent<SpeedCollider>();
                             colScript.colliderID = dynCam.camID;
+                            //speedCol.AddComponent<ColliderSelfCleanUp>();
                             dynCam.speedColliders[i] = speedCol.GetComponent<BoxCollider>();
                             dynCam.speedColliders[i].isTrigger = true;
                         }
@@ -230,7 +231,7 @@ public class DynamicCameraControl : MonoBehaviour
             }   
         }
 
-        Debug.Log(cameraProperties[activeCameraIndex].camGO.name);
+        //Debug.Log(cameraProperties[activeCameraIndex].camGO.name);
     }
 
     public DynCamera GetDynCamByGO(GameObject go) {
@@ -244,7 +245,15 @@ public class DynamicCameraControl : MonoBehaviour
 
         return null;
     }
-
+    public DynCamera GetDynCamByID(int id)
+    {
+        foreach(DynCamera dynCam in cameraProperties)
+        {
+            if (dynCam.camID == id)
+                return dynCam;
+        }
+        return null;
+    }
     private void OnDrawGizmos()
     {
         if (cameraProperties.Count == 0 || selectedCameraIndex > cameraProperties.Count-1)
@@ -285,6 +294,7 @@ public class DynCamera
     [Tooltip("Collider used for triggering the camera")]
     public BoxCollider changeCollider;
     public List<BoxCollider> speedColliders;
+    [HideInInspector] public Transform cameraParent;
     [HideInInspector] public Transform speedCollidersParent;
     [HideInInspector] public int speedCollidersCount = 0;
     [Tooltip("Mark for deletion.")]

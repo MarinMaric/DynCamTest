@@ -33,6 +33,16 @@ public class Notes : MonoBehaviour
     //Vise collidera    <--done
 
     //Stop relying on draw gizmos for inspector setting
+
+    //Hierarchy fix     <--done
+
+    //Speed fix         (Speed controller interpolation?)   <--done
+
+    //zoom dovrsiti     (Change collider makes zooming happen?)
+
+    //Snimiti test scenu kako se koristi sa OBS 
+    
+    //Dodati brzinu tranzicije za kamere (Change collider?)
 }
 
 /*

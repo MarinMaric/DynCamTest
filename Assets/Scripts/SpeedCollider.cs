@@ -7,6 +7,9 @@ public class SpeedCollider : MonoBehaviour
 {
     public int colliderID;
     public float speedChange = 5f;
+    [Range(1,20000)]
+    [Tooltip("The smaller the value, the faster the interpolation.")]
+    public float speedFactor = 1f;
     bool triggered = false;
 
     void OnDrawGizmos()
@@ -52,7 +55,10 @@ public class SpeedCollider : MonoBehaviour
         if (!triggered)
         {
             var movementScript = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].camGO.GetComponent<BezierTravel>();
-            movementScript.speed = speedChange;
+            movementScript.speedChange = speedChange;
+            movementScript.speedFactor = speedFactor;
+            movementScript.interpolateSpeed = true;
+            movementScript.timeStartedLerping = Time.time;
             triggered = true;
         }
     }
