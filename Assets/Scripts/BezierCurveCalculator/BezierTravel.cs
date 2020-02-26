@@ -129,7 +129,8 @@ public class BezierTravel : MonoBehaviour
         {
             var colliderGO = new GameObject();
             colliderGO.name = nameCompare;
-            colliderGO.AddComponent<ChangeStateCollider>();
+            var changeScript = colliderGO.AddComponent<ChangeStateCollider>();
+            changeScript.cameraID = dynCam.camID;
             var col = colliderGO.AddComponent<BoxCollider>();
             col.size = new Vector3(5f, 5f, 1.5f);
             col.isTrigger = true;

@@ -18,7 +18,6 @@ public class SpeedCollider : MonoBehaviour
         {
             if (colliderID == DynamicCameraControl.cleanUpID)
             {
-
                 DynCamera dynCam = null;
                 foreach (DynCamera cam in DynamicCameraControl.Instance.cameraProperties)
                 {
