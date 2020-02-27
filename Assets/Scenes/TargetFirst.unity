@@ -255,7 +255,7 @@ MonoBehaviour:
     camID: 1
     zoomMin: 40
     zoomMax: 60
-    zoomAmount: 60
+    zoomAmount: 40
     zoomNew: 0
     zoomSpeedFactor: 1
     zoomIn: 0
@@ -583,10 +583,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   points:
-  - {x: -1.2924948, y: 0, z: 0}
-  - {x: -5.9494276, y: 0, z: 0}
-  - {x: -9.8659, y: 0, z: 2.3305511}
-  - {x: -9.851057, y: 0, z: 8.603783}
+  - {x: 4.0331087, y: 0, z: 0}
+  - {x: 8.518585, y: 0, z: 0}
+  - {x: 10.021326, y: 0, z: 2.3305511}
+  - {x: 9.961105, y: 0, z: 8.603783}
   splineId: 1
 --- !u!4 &673396911
 Transform:
@@ -1700,7 +1700,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 60
+    FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -1721,8 +1721,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1653898905}
-  m_LocalRotation: {x: -4.453132e-18, y: -0.9999866, z: 2.3072607e-20, w: 0.0051811384}
-  m_LocalPosition: {x: 4.0083046, y: -10.4, z: 33.9}
+  m_LocalRotation: {x: 5.558101e-17, y: -0.9527146, z: 2.5155184e-16, w: 0.3038667}
+  m_LocalPosition: {x: 8.06, y: -10.4, z: 33.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1572016941}

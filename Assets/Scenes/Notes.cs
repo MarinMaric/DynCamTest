@@ -38,7 +38,7 @@ public class Notes : MonoBehaviour
 
     //Speed fix         (Speed controller interpolation?)   <--done
 
-    //zoom dovrsiti     (Change collider makes zooming happen?)     
+    //zoom dovrsiti     (Change collider makes zooming happen?)     <--done
 
     //Snimiti test scenu kako se koristi sa OBS 
     
