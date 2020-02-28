@@ -17,7 +17,24 @@ public class DynamicCameraEditor : Editor
 
     public override void OnInspectorGUI()
     {
-        base.OnInspectorGUI();
+        //base.OnInspectorGUI();
+
+        if(cameraProperties == null)
+        {
+            cameraProperties = serializedObject.FindProperty("cameraProperties");
+        }
+
+        for(int i=0; i< cameraProperties.arraySize; i++)
+        {
+            if (EditorGUILayout.Foldout(true, new GUIContent("Camera" + (i + 1)))){
+                EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i).FindPropertyRelative("camGO"));
+                EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i).FindPropertyRelative("changeCollider"));
+                EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i).FindPropertyRelative("triggerList"));
+            }
+            //EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i));
+        }
+
+        serializedObject.ApplyModifiedProperties();
 
         //Adding camera
         if (GUILayout.Button("Create New Camera", EditorStyles.miniButton))

@@ -140,11 +140,11 @@ public class BezierTravel : MonoBehaviour
     }
     public void CheckSpeedTriggers(DynCamera dynCam)
     {
-        if (dynCam.speedColliders.Count > 0 && dynCam.speedColliders[0].GetComponent<SpeedCollider>().colliderID == dynCam.camID)
+        if (dynCam.triggerList.speedColliders.Count > 0 && dynCam.triggerList.speedColliders[0].GetComponent<SpeedCollider>().colliderID == dynCam.camID)
             return;
         else
         {
-            dynCam.speedColliders.Clear();
+            dynCam.triggerList.speedColliders.Clear();
             dynCam.speedCollidersCount = 0;
         }
     }

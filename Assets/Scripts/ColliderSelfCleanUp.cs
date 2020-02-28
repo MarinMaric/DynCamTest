@@ -11,11 +11,11 @@ public class ColliderSelfCleanUp : MonoBehaviour
         var dynCam = DynamicCameraControl.Instance.GetDynCamByID(GetComponent<SpeedCollider>().colliderID);
         if (dynCam != null)
         {
-            foreach (BoxCollider speedCol in dynCam.speedColliders)
+            foreach (BoxCollider speedCol in dynCam.triggerList.speedColliders)
             {
                 if (speedCol.gameObject.name == gameObject.name)
                 {
-                    dynCam.speedColliders.Remove(speedCol);
+                    dynCam.triggerList.speedColliders.Remove(speedCol);
                     dynCam.speedCollidersCount--;
                     break;
                 }

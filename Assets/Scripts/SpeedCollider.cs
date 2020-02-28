@@ -30,15 +30,15 @@ public class SpeedCollider : MonoBehaviour
 
                 var nameNumber = int.Parse(gameObject.name.Substring(gameObject.name.Length - 1, 1));
 
-                if (nameNumber > dynCam.speedColliders.Count-1)
+                if (nameNumber > dynCam.triggerList.speedColliders.Count-1)
                     DynamicCameraControl.cleanedUpCounter++;
                 else return;
 
-                if (dynCam.speedColliders.Count < dynCam.speedCollidersCount)
+                if (dynCam.triggerList.speedColliders.Count < dynCam.speedCollidersCount)
                 {
-                    if (Mathf.Abs(dynCam.speedColliders.Count - dynCam.speedCollidersCount) == DynamicCameraControl.cleanedUpCounter)
+                    if (Mathf.Abs(dynCam.triggerList.speedColliders.Count - dynCam.speedCollidersCount) == DynamicCameraControl.cleanedUpCounter)
                     {
-                        dynCam.speedCollidersCount = dynCam.speedColliders.Count;
+                        dynCam.speedCollidersCount = dynCam.triggerList.speedColliders.Count;
                         DynamicCameraControl.cleanedUpCounter = 0;
                         DynamicCameraControl.Instance.cleanUpColliders = false;
                     }

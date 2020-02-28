@@ -111,15 +111,15 @@ public class DynamicCameraControl : MonoBehaviour
                 dynZoomScript.zoomNew = dynCam.zoomNew;
                 dynZoomScript.shouldZoom = true;
             }
-            if(dynCam.speedColliders.Count != dynCam.speedCollidersCount)
+            if(dynCam.triggerList.speedColliders.Count != dynCam.speedCollidersCount)
             {
-                for(int i=0;i<dynCam.speedColliders.Count;i++)
+                for(int i=0;i<dynCam.triggerList.speedColliders.Count;i++)
                 {
-                    if (dynCam.speedColliders[i] == null || dynCam.speedColliders[i].GetComponent<SpeedCollider>().colliderID !=dynCam.camID ||dynCam.speedColliders[i].gameObject.name!= dynCam.camGO.name + "_SpeedCollider" + i)
+                    if (dynCam.triggerList.speedColliders[i] == null || dynCam.triggerList.speedColliders[i].GetComponent<SpeedCollider>().colliderID !=dynCam.camID ||dynCam.triggerList.speedColliders[i].gameObject.name!= dynCam.camGO.name + "_SpeedCollider" + i)
                     {
                         if (i < dynCam.speedCollidersCount)
                         {
-                            dynCam.speedColliders.RemoveAt(i);
+                            dynCam.triggerList.speedColliders.RemoveAt(i);
                         }
                         else
                         {
@@ -130,20 +130,20 @@ public class DynamicCameraControl : MonoBehaviour
                             var colScript = speedCol.AddComponent<SpeedCollider>();
                             colScript.colliderID = dynCam.camID;
                             //speedCol.AddComponent<ColliderSelfCleanUp>();
-                            dynCam.speedColliders[i] = speedCol.GetComponent<BoxCollider>();
-                            dynCam.speedColliders[i].isTrigger = true;
+                            dynCam.triggerList.speedColliders[i] = speedCol.GetComponent<BoxCollider>();
+                            dynCam.triggerList.speedColliders[i].isTrigger = true;
                         }
                     }
                 }
                 
-                if (dynCam.speedColliders.Count < dynCam.speedCollidersCount)
+                if (dynCam.triggerList.speedColliders.Count < dynCam.speedCollidersCount)
                 {
                     cleanUpID = dynCam.camID;
                     cleanUpColliders = true;
                 }
                 else
                 {
-                    dynCam.speedCollidersCount = dynCam.speedColliders.Count;
+                    dynCam.speedCollidersCount = dynCam.triggerList.speedColliders.Count;
                 }
             }
 
@@ -293,7 +293,7 @@ public class DynCamera
     public GameObject camGO;
     [Tooltip("Collider used for triggering the camera")]
     public BoxCollider changeCollider;
-    public List<BoxCollider> speedColliders;
+    public SpeedTriggerList triggerList;
     [HideInInspector] public Transform cameraParent;
     [HideInInspector] public Transform speedCollidersParent;
     [HideInInspector] public int speedCollidersCount = 0;
