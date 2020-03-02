@@ -26,12 +26,12 @@ public class DynamicCameraEditor : Editor
 
         for(int i=0; i< cameraProperties.arraySize; i++)
         {
-            if (EditorGUILayout.Foldout(true, new GUIContent("Camera" + (i + 1)))){
-                EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i).FindPropertyRelative("camGO"));
-                EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i).FindPropertyRelative("changeCollider"));
-                EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i).FindPropertyRelative("triggerList"));
-            }
-            //EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i));
+            //if (EditorGUILayout.Foldout(true, new GUIContent("Camera" + (i + 1)))){
+            //    EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i).FindPropertyRelative("camGO"));
+            //    EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i).FindPropertyRelative("changeCollider"));
+            //    EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i).FindPropertyRelative("triggerList"));
+            //}
+            EditorGUILayout.PropertyField(cameraProperties.GetArrayElementAtIndex(i));
         }
 
         serializedObject.ApplyModifiedProperties();
