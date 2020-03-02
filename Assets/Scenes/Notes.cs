@@ -33,6 +33,16 @@ public class Notes : MonoBehaviour
     //Vise collidera    <--done
 
     //Stop relying on draw gizmos for inspector setting
+
+    //Hierarchy fix     <--done
+
+    //Speed fix         (Speed controller interpolation?)   <--done
+
+    //zoom dovrsiti     (Change collider makes zooming happen?)     <--done
+
+    //Snimiti test scenu kako se koristi sa OBS 
+    
+    //Dodati brzinu tranzicije za kamere (Change collider?)
 }
 
 /*
@@ -50,6 +60,16 @@ public class Notes : MonoBehaviour
         2) curve being generated on the illustrator
         3) individual transforms being assigned to the camera properties
      
+    =========================================================================
+    
+    ---Changing zoom---
 
-     
+    There has to be a defined period of transition (zoom speed factor).
+    In this period of transition the zoom will be done and upon reaching that 
+    full percentage the camera will switch.
+
+    The camera needs to know to what field of view it needs to change. That will be
+    set in the inspector. If there is an external variable that forces the min or
+    max value then it can be used for determining the right mode instead of a counter.
+
 */
