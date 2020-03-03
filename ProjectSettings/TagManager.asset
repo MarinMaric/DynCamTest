@@ -9,6 +9,7 @@ TagManager:
   - DynCamManager
   - Illustrator
   - Animated
+  - racer
   layers:
   - Default
   - TransparentFX

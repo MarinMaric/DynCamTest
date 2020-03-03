@@ -23,6 +23,9 @@ public class ChangeStateCollider : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!CheckTag(other.gameObject.tag))
+            return;
+
         if (!triggered)
         {
             var dynCam = DynamicCameraControl.Instance.GetDynCamByID(cameraID);
@@ -41,5 +44,16 @@ public class ChangeStateCollider : MonoBehaviour
         anim.SetInteger("StateCounter", anim.GetInteger("StateCounter") + 1);
         DynamicCameraControl.changingState = true;
         gameObject.SetActive(false);
+    }
+
+    bool CheckTag(string tag)
+    {
+        foreach(string triggerTag in DynamicCameraControl.Instance.changeTriggerTags)
+        {
+            if (tag == triggerTag)
+                return true;
+        }
+
+        return false;
     }
 }

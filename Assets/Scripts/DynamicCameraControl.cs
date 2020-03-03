@@ -70,6 +70,9 @@ public class DynamicCameraControl : MonoBehaviour
     [HideInInspector] public static int cleanUpID;
     [HideInInspector] public static int cleanedUpCounter = 0;
 
+    [Tooltip("List of tags that will trigger changes in State Driven Camera Animated Target's animator.")]
+    public List<string> changeTriggerTags;
+
     private void OnValidate()
     {
         foreach (DynCamera dynCam in cameraProperties)
