@@ -14,7 +14,7 @@ public class DynamicCameraControl : MonoBehaviour
     public static int idGenerator = 0;
     [HideInInspector]public List<GameObject> cameras;
     public List<DynCamera> cameraProperties;
-    [HideInInspector]public int activeCameraIndex = 0;
+  /*  [HideInInspector]*/public int activeCameraIndex = 1;
     [HideInInspector]public int selectedCameraIndex = int.MaxValue;
 
     [HideInInspector]
@@ -149,6 +149,10 @@ public class DynamicCameraControl : MonoBehaviour
                     dynCam.speedCollidersCount = dynCam.triggerList.speedColliders.Count;
                 }
             }
+            if (dynCam.stationary != dynCam.stationaryCheck) {
+                dynCam.stationaryCheck = dynCam.stationary;
+                dynCam.camGO.GetComponent<BezierTravel>().stationary = dynCam.stationary;
+            }
 
             #region obsolete curve point count validating
             //else
@@ -221,9 +225,23 @@ public class DynamicCameraControl : MonoBehaviour
 
     public void ChangeActiveCamera()
     {
-        for(int i=0; i < cameraProperties.Count; i++)
+        //for(int i=0; i < cameraProperties.Count; i++)
+        //{
+        //    if (Camera.main.gameObject.transform.position == cameraProperties[i].camGO.transform.position && activeCameraIndex != i)
+        //    {
+        //        cameraProperties[activeCameraIndex].camGO.GetComponent<BezierTravel>().activeCamera = false;
+        //        activeCameraIndex = i;
+        //        cameraProperties[i].camGO.GetComponent<BezierTravel>().activeCamera = true;
+        //        DynamicCameraControl.changingState = false;
+        //        decorator.GetComponent<SplineDecorator>().Decorate();
+        //        break;
+        //    }   
+        //}
+        Animator anim = animatedTarget.GetComponent<Animator>();
+
+        for (int i=0; i < cameraProperties.Count; i++)
         {
-            if (Camera.main.gameObject.transform.position == cameraProperties[i].camGO.transform.position && activeCameraIndex != i)
+            if (cameraProperties[i].animValue == anim.GetInteger("StateCounter"))
             {
                 cameraProperties[activeCameraIndex].camGO.GetComponent<BezierTravel>().activeCamera = false;
                 activeCameraIndex = i;
@@ -231,7 +249,7 @@ public class DynamicCameraControl : MonoBehaviour
                 DynamicCameraControl.changingState = false;
                 decorator.GetComponent<SplineDecorator>().Decorate();
                 break;
-            }   
+            }
         }
 
         //Debug.Log(cameraProperties[activeCameraIndex].camGO.name);
@@ -286,6 +304,10 @@ public class DynamicCameraControl : MonoBehaviour
             }
         }
     }
+
+    public void ChangeTarget(Transform newTarget) {
+        stateDrivenCamera.LookAt = newTarget;
+    }
 }
 
 [Serializable]
@@ -305,6 +327,8 @@ public class DynCamera
     [HideInInspector]public Vector3 positionOffset;
     [HideInInspector]public Vector3 originalPosition;
     /*[HideInInspector] */public int camID;
+    [Tooltip("Value of the animator parameter (by default equals 'assigned state - 1'.")]
+    public int animValue;
 
     [Header("Zoom Settings")]
     [Tooltip("The closest the camera can zoom in at the target.")]
@@ -326,6 +350,9 @@ public class DynCamera
     //public List<Transform> keyPoints;
     [HideInInspector]public int countTracker;
     [Header("Camera Path")]
+    public bool stationary = false;
+    [HideInInspector]
+    public bool stationaryCheck = false;
     public BezierSpline path;
     [Tooltip("Defines how many points from the curve will be sampled by the waypoint system.")]
     public int frequency = 15;

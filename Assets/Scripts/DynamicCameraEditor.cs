@@ -13,7 +13,7 @@ public class DynamicCameraEditor : Editor
 {
     SerializedProperty stateDrivenCamera;
     SerializedProperty camerasArray;
-    SerializedProperty cameraProperties;
+    SerializedProperty cameraProperties, activeCameraIndex;
     SerializedProperty animatedTarget, triggerTags;
     
     public override void OnInspectorGUI()
@@ -33,7 +33,14 @@ public class DynamicCameraEditor : Editor
         }
 
         EditorGUILayout.PropertyField(triggerTags);
-        
+
+        if (activeCameraIndex == null)
+        {
+            activeCameraIndex = serializedObject.FindProperty("activeCameraIndex");
+        }
+
+        EditorGUILayout.PropertyField(activeCameraIndex);
+
         if (cameraProperties == null)
         {
             cameraProperties = serializedObject.FindProperty("cameraProperties");

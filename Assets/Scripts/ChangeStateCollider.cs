@@ -6,6 +6,7 @@ using Cinemachine;
 public class ChangeStateCollider : MonoBehaviour
 {
     bool triggered = false;
+    [HideInInspector]
     public int cameraID;
     DynCamZoom zoomScript;
     public float zoomAmount = 0;

@@ -14,7 +14,8 @@ public class SplineDecorator : MonoBehaviour
 
     public void Start()
     {
-        Decorate();
+        if(!DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].stationary)
+            Decorate();
     }
 
     public void Decorate()

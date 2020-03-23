@@ -19,6 +19,8 @@ public class BezierTravel : MonoBehaviour
     [HideInInspector]
     public float speedFactor = 1f;
 
+    public bool stationary = false;
+
     private void Start()
     {
         if (DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].camGO.name == gameObject.name)
@@ -88,10 +90,14 @@ public class BezierTravel : MonoBehaviour
                 InterpolateSpeed(speedChange);
             }
 
-            transform.position = Vector3.MoveTowards(transform.position, points[counter], Time.deltaTime * speed);
-            transform.LookAt(points[counter]);
-            if (Vector3.Distance(transform.position, points[counter]) < 1f && counter != points.Count - 1)
-                counter++;
+            if (!stationary)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, points[counter], Time.deltaTime * speed);
+                transform.LookAt(points[counter]);
+                if (Vector3.Distance(transform.position, points[counter]) < 1f && counter != points.Count - 1)
+                    counter++;
+            }
+
         }
     }
 
@@ -110,7 +116,7 @@ public class BezierTravel : MonoBehaviour
     {
         if (dynCam.path != null && dynCam.path.splineId == dynCam.camID)
             return;
-        else
+        else if(GameObject.Find(dynCam.camGO.name + "_Path")==null)
         {
             var pathGO = new GameObject();
             pathGO.name = gameObject.name + "_Path";
@@ -125,7 +131,7 @@ public class BezierTravel : MonoBehaviour
         string nameCompare = gameObject.name + "_ChangeCollider";
         if (dynCam.changeCollider != null && dynCam.changeCollider.name == nameCompare)
             return;
-        else
+        else if(GameObject.Find(nameCompare)==null)
         {
             var colliderGO = new GameObject();
             colliderGO.name = nameCompare;
