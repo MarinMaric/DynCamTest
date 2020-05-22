@@ -6,7 +6,11 @@ using UnityEditor;
 public class SpeedCollider : MonoBehaviour
 {
     public int colliderID;
+
+    public bool changeZoom = false;
     public float speedChange = 5f;
+    public float zoomChange = 5f;
+
     [Range(1,20000)]
     [Tooltip("The smaller the value, the faster the interpolation.")]
     public float speedFactor = 1f;
@@ -54,6 +58,8 @@ public class SpeedCollider : MonoBehaviour
         if (!triggered)
         {
             var movementScript = DynamicCameraControl.Instance.cameraProperties[DynamicCameraControl.Instance.activeCameraIndex].camGO.GetComponent<BezierTravel>();
+            movementScript.changeZoom = changeZoom;
+            movementScript.zoomChange = zoomChange;
             movementScript.speedChange = speedChange;
             movementScript.speedFactor = speedFactor;
             movementScript.interpolateSpeed = true;

@@ -40,7 +40,7 @@ public class Notes : MonoBehaviour
 
     //zoom dovrsiti     (Change collider makes zooming happen?)     <--done
 
-    //Snimiti test scenu kako se koristi sa OBS 
+    //Snimiti test scenu kako se koristi sa OBS     <--done
     
     //Dodati brzinu tranzicije za kamere (Change collider?)
 }

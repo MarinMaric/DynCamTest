@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class BezierTravel : MonoBehaviour
 {
@@ -11,13 +12,15 @@ public class BezierTravel : MonoBehaviour
     public bool activeCamera = false;
 
     [HideInInspector]
-    public float speedChange = 0f;
+    public float speedChange = 0f, zoomChange=0f;
     [HideInInspector]
     public bool interpolateSpeed = false;
     [HideInInspector]
     public float timeStartedLerping = 0f;
     [HideInInspector]
     public float speedFactor = 1f;
+    [HideInInspector]
+    public bool changeSpeed, changeZoom = false;
 
     public bool stationary = false;
 
@@ -106,6 +109,11 @@ public class BezierTravel : MonoBehaviour
         float timeSinceStarted = Time.time - timeStartedLerping;
         float percentageComplete = timeSinceStarted / speedFactor;
         speed = Mathf.Lerp(speed, speedChange, percentageComplete);
+        if (changeZoom)
+        {
+            float fov = gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView;
+            gameObject.GetComponent<CinemachineVirtualCamera>().m_Lens.FieldOfView = Mathf.Lerp(fov, zoomChange, percentageComplete);
+        }
         if (percentageComplete >= 1)
         {
             interpolateSpeed = false;
