@@ -82,6 +82,7 @@
     <Compile Include="Assets\Scripts\DynamicCameraEditor.cs" />
     <Compile Include="Assets\Scripts\GroupControl.cs" />
     <Compile Include="Assets\Scripts\IdGeneration.cs" />
+    <Compile Include="Assets\Scripts\MovingTarget.cs" />
     <Compile Include="Assets\Scripts\PropertyDrawers\DynCamDrawer.cs" />
     <Compile Include="Assets\Scripts\PropertyDrawers\MyProperty.cs" />
     <Compile Include="Assets\Scripts\PropertyDrawers\PropertyMono.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Assets\Scripts\SpeedCollider.cs" />
     <Compile Include="Assets\Scripts\SpeedTriggerList.cs" />
     <Compile Include="Assets\Scripts\TargetSelector.cs" />
+    <Compile Include="Assets\Scripts\WaypointGizmo.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/Marin Marić/Desktop/DynCamTest/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
